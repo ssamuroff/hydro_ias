@@ -1,0 +1,12 @@
+
+datafile: /Users/hattifattener/Documents/ias/mbii/modelling_paper/data/fits/real/2pt_ia_mbii_composite.fits
+nbins : 10
+rlim : [0.1,33]
+correlations : wgp wpp wgg
+cosmology : mbii
+box_size : 100.
+kmin : 0.06
+kmax : 5000
+bias: 1.
+
+redshifts : 0.062 0.300 0.625 1.00
