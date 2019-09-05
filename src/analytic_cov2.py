@@ -18,8 +18,6 @@ cosmologies ={'mbii': FlatLambdaCDM(H0=69., Om0=0.30, Ob0=0.048)}
 
 kernels = {'gg':0,'gp':2,'pp':(0,4)}
 
-volume = {'eboss_matched':719417458.4887439, 'lowz_shape':812067482.3575193, 'lowz_density':812067482.3575193, 'redmagic_high_density':2775311058.488819, 'redmagic_low_density':1875536890.0891557, 'redmagic_high_shape':2775311058.488819, 'redmagic_low_shape':1875536890.0891557}
-
 class Cov:
 	def __init__(self, params):
 		fits = fi.FITS(params['datafile'])
@@ -83,9 +81,9 @@ class Cov:
 		pk_name = get_pk_name(meas1,meas2)
 		bg = self.get_bias(pk_name)
 
-		P = np.loadtxt('/Users/hattifattener/Documents/ias/mbii/modelling_paper/data/theory/cosmosis/nla/example_output/%s/p_k.txt'%pk_name) * bg
-		k = np.loadtxt('/Users/hattifattener/Documents/ias/mbii/modelling_paper/data/theory/cosmosis/nla/example_output/%s/k_h.txt'%pk_name)
-		z = np.loadtxt('/Users/hattifattener/Documents/ias/mbii/modelling_paper/data/theory/cosmosis/nla/example_output/%s/z.txt'%pk_name)
+		P = np.loadtxt('data/theory/pk/%s/%s/p_k.txt'%(self.settings['cosmology'],pk_name)) * bg
+		k = np.loadtxt('data/theory/pk/%s/%s/k_h.txt'%(self.settings['cosmology'],pk_name))
+		z = np.loadtxt('data/theory/pk/%s/%s/z.txt'%(self.settings['cosmology'],pk_name))
 
 		if zbin1!=zbin2:
 			return k, np.zeros_like(P[0])
@@ -207,9 +205,7 @@ def run(params):
 	i0,j0 = 0,0
 
 	fits = fi.FITS(params['datafile'])
-	for c1 in covmat.settings['correlations'].split():
-
-#		
+	for c1 in covmat.settings['correlations'].split():	
 
 		for z1 in fits[c1]['BIN'].read():
 
