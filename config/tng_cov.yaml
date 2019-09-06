@@ -1,0 +1,16 @@
+
+datafile: /Users/hattifattener/Documents/ias/mbii/modelling_paper/data/fits/real/2pt_ia_tng_composite.fits
+nbins : 12
+rlim : [0.1,68.]
+correlations : wgp wpp wgg
+cosmology : tng
+box_size : 207.
+kmin : 0.06
+kmax : 5000
+bias: 1.
+
+redshifts : 0.0 
+
+savedir : tng/2pt/txt/
+shapes : data/cats/fits/TNG300-1_99_non-reduced_galaxy_shapes.fits
+positions : data/cats/fits/TNG300-1_99_non-reduced_galaxy_shapes.fits

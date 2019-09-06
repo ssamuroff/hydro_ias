@@ -13,8 +13,7 @@ from src import hankel_transform as sukhdeep
 from src import power_spectra as pkutil
 from astropy.cosmology import FlatLambdaCDM
 
-cosmologies ={'mbii': FlatLambdaCDM(H0=69., Om0=0.30, Ob0=0.048)}
-
+cosmologies ={'mbii': FlatLambdaCDM(H0=69., Om0=0.30, Ob0=0.048), 'tng':FlatLambdaCDM(H0=6774., Om0=0.3089, Ob0=0.0486)}
 
 kernels = {'gg':0,'gp':2,'pp':(0,4)}
 
@@ -238,4 +237,33 @@ def run(params):
 	print('Done all.')
 
 
+def get_sigma_e(cat, area):
+        """
+        Calculate sigma_e for shape catalog.
+        """
 
+        e1  = cat['e1']
+        e2  = cat['e2']
+        w   = np.ones_like(cat['e1'])
+
+        snvar = 0.24#np.sqrt((cat['e1'][mask][cat['snr'][mask]>100].var()+cat['e2'][mask][cat['snr'][mask]>100].var())/2.)
+        var = 1./w - snvar**2
+        var[var < 0.] = 0.
+        s = 1.
+        w[w > snvar**-2] = snvar**-2
+        print( 'var',var.min(),var.max())
+
+        mean_e1 = np.asscalar(np.average(cat['e1'],weights=w))
+        mean_e2 = np.asscalar(np.average(cat['e2'],weights=w))
+
+        a1 = np.sum(w**2 * (e1-mean_e1)**2)
+        a2 = np.sum(w**2 * (e2-mean_e2)**2)
+        b  = np.sum(w**2)
+        c  = np.sum(w * s)
+
+        d  = np.sum(w)
+
+        sigma_e =  np.sqrt( (a1/c**2 + a2/c**2) * (d**2/b) / 2. ) 
+        sigma_ec = np.sqrt( np.sum(w**2 * (e1**2 + e2**2 - var)) / (2.*np.sum(w**2 * s**2)) ) 
+
+        return sigma_e, sigma_ec, mean_e1, mean_e2
