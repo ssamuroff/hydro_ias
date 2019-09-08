@@ -42,8 +42,8 @@ def project_3d_shape(a3d, b3d, c3d, q3d, s3d):
 def export(filename, cat, new_columns, column_names, extra_files=[]):
 	outfits = fi.FITS(filename,'rw')
 
-	if len(extra_files)>0:
-		ind = np.argsort(cat['gal_id'])
+	#if len(extra_files)>0:
+	ind = np.argsort(cat['gal_id'])
 
 	# keep all the existing columns
 	out_dict = {}
@@ -64,6 +64,7 @@ def export(filename, cat, new_columns, column_names, extra_files=[]):
 		print('%d columns'%ncol)
 
 		cmask = np.argsort(new['gal_id'])
+		import pdb ; pdb.set_trace()
 		for name in new.dtype.names:
 			out_dict[name] = new[name][cmask]
 
