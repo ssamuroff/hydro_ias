@@ -15,4 +15,4 @@ for correlation in correlations:
 	for snapshot in snapshots:
 		print('Processing %s (snapshot %d)'%(correlation, snapshot) )
 		exec('from src.twopoint import calculate_%s as fns'%correlation)
-		fns.compute(options, options['nbins'], snapshot)
+		fns.compute(options, options['nbins'], snapshot, -1)
