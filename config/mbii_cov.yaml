@@ -2,7 +2,7 @@
 datafile: /home/ssamurof/mbii/datavecs/2pt_ia_mbii.fits
 nbins : 10
 rlim : [0.1,33]
-correlations : wgp wpp wgg
+correlations : wgg
 cosmology : mbii
 box_size : 100.
 ng : 0.11356

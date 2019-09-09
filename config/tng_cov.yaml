@@ -16,3 +16,4 @@ redshifts : 0.0
 savedir : tng/2pt/txt/
 shapes : data/cats/fits/TNG300-1_99_non-reduced_galaxy_shapes.fits
 positions : data/cats/fits/TNG300-1_99_non-reduced_galaxy_shapes.fits
+snapshots : 99

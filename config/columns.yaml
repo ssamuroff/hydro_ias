@@ -1,0 +1,37 @@
+-1:
+  object_id: gal_id None
+  a1: av_x None
+  a2: av_y None
+  a3: av_z None
+  b1: bv_x None
+  b2: bv_y None
+  b3: bv_z None
+  c1: cv_x None
+  c2: cv_y None
+  c3: cv_z None
+  a1_dm: av_x_dm None
+  a2_dm: av_y_dm None
+  a3_dm: av_z_dm None
+  b1_dm: bv_x_dm None
+  b2_dm: bv_y_dm None
+  b3_dm: bv_z_dm None
+  c1_dm: cv_x_dm None
+  c2_dm: cv_y_dm None
+  c3_dm: cv_z_dm None
+  lambda_a : a sqrt
+  lambda_b : b sqrt
+  lambda_c : c sqrt
+  lambda_a_dm : a_dm sqrt
+  lambda_b_dm : b_dm sqrt
+  lambda_c_dm : c_dm sqrt
+  x : x None
+  y : y None
+  z : z None
+  e1 : e1 None
+  e2 : e2 None
+  stellar_mass : stellar_mass_all *1e10
+  hybrid_central : central_flag None
+  xcent : xcent None
+  ycent : ycent None
+  zcent : zcent None
+
