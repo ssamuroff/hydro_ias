@@ -61,19 +61,27 @@ class Cov:
 		elif pk_name=='galaxy_power':
 			return self.settings['bias'] * self.settings['bias'] 
 
+	def get_aia(self,pk_name):
+		if pk_name=='galaxy_power':
+			return 1.
+		elif pk_name=='galaxy_intrinsic_power':
+			return self.settings['aia']
+		elif pk_name=='intrinsic_power':
+			return self.settings['aia'] * self.settings['aia'] 
+
 	def choose_noise(self, m1, m2, z1, z2):
 
 		s = self.settings['sigma_e']
 		ng = self.settings['ng']
 
-		if (m1!=m2) or (z1!=m2):
+		if (m1!=m2):
 			return 0
 
 		elif (m1=='g'):
-			return s*s/n
+			return s*s/ng
 
 		elif (m1=='p'):
-			return 1./n
+			return 1./ng
 
 	def get_pk(self, meas1, meas2, zbin1, zbin2):
 
@@ -92,8 +100,9 @@ class Cov:
 		# this should be a 2D grid, nk x nz
 		pk_name = get_pk_name(meas1,meas2)
 		bg = self.get_bias(pk_name)
+		A_IA = self.get_aia(pk_name)
 
-		P = np.loadtxt('data/pk/%s/%s/p_k.txt'%(self.settings['cosmology'],pk_name)) * bg
+		P = np.loadtxt('data/pk/%s/%s/p_k.txt'%(self.settings['cosmology'],pk_name)) * bg * A_IA
 		k = np.loadtxt('data/pk/%s/%s/k_h.txt'%(self.settings['cosmology'],pk_name))
 		z = np.loadtxt('data/pk/%s/%s/z.txt'%(self.settings['cosmology'],pk_name))
 
