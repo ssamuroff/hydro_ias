@@ -1,15 +1,16 @@
 
-datafile: /home/ssamurof/mbii/datavecs/2pt_ia_mbii.fits
-nbins : 10
+datafile: /home/ssamurof/hydro_ias/data/2pt/fits/2pt_mbii.fits
+nbins : 12
 rlim : [0.1,33]
-correlations : wgg
+correlations : wgp wpp wgg
 cosmology : mbii
 box_size : 100.
 ng : 0.11356
-sigma_e : 0.411
+sigma_e : 0.145
 kmin : 0.06
 kmax : 60
-bias: 1.
+bias: 1.2
+aia : 1.4
 
 redshifts : 0.062 0.300 0.625 1.00
 
