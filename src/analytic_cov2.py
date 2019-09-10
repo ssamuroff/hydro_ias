@@ -106,8 +106,8 @@ class Cov:
 		k = np.loadtxt('data/pk/%s/%s/k_h.txt'%(self.settings['cosmology'],pk_name))
 		z = np.loadtxt('data/pk/%s/%s/z.txt'%(self.settings['cosmology'],pk_name))
 
-		if zbin1!=zbin2:
-			return k, np.zeros_like(P[0])
+#		if zbin1!=zbin2:
+#			return k, np.zeros_like(P[0])
 
 		N = self.choose_noise(meas1,meas2,zbin1,zbin2)
 		P+=N
