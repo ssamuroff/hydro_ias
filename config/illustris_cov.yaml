@@ -1,9 +1,9 @@
 
 datafile: /Users/hattifattener/Documents/ias/mbii/modelling_paper/data/fits/real/2pt_ia_illustris_composite.fits
 nbins : 8
-rlim : [0.1,23.]
-correlations : wgg
-cosmology : tng
+rlim : [0.1,24.]
+correlations : wgp wpp wgg
+cosmology : illustris
 box_size : 75.
 kmin : 0.06
 kmax : 5000

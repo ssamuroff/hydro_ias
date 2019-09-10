@@ -6,10 +6,11 @@ correlations : wgp wpp wgg
 cosmology : mbii
 box_size : 100.
 ng : 0.11356
-sigma_e : 0.411
+sigma_e : 0.145
 kmin : 0.06
 kmax : 60
-bias: 1.
+bias: 1.2
+aia : 1.4
 
 redshifts : 0.062 0.300 0.625 1.00
 
