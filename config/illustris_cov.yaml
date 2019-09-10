@@ -1,7 +1,7 @@
 
 datafile: /Users/hattifattener/Documents/ias/mbii/modelling_paper/data/fits/real/2pt_ia_illustris_composite.fits
 nbins : 8
-rlim : [0.1,25.]
+rlim : [0.1,24.]
 correlations : wgp wpp wgg
 cosmology : illustris
 box_size : 75.
@@ -12,5 +12,6 @@ bias: 1.
 redshifts : 0.0 
 
 savedir : illustris/2pt/txt/
-shapes : data/cats/fits/Illustris-1_135_non-reduced_galaxy_shapes.fits
-positions : data/cats/fits/Illustris-1_135_non-reduced_galaxy_shapes.fits
+shapes : data/cats/fits/Illustris-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+positions : data/cats/fits/Illustris-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+snapshots : 135

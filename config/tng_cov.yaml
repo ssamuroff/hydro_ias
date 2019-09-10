@@ -2,7 +2,7 @@
 datafile: /home/ssamurof/mbii/datavecs/2pt_ia_mbii_compositecov.fits
 nbins : 12
 rlim : [0.1,68.]
-correlations : wgp wpp wgg
+correlations : wgg
 cosmology : tng
 box_size : 207.
 ng : 0.02932091719004712
@@ -14,6 +14,8 @@ bias: 1.
 redshifts : 0.0
 
 savedir : tng/2pt/txt/
-shapes : data/cats/fits/TNG300-1_99_non-reduced_galaxy_shapes.fits
-positions : data/cats/fits/TNG300-1_99_non-reduced_galaxy_shapes.fits
+shapes : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+positions : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+
+
 snapshots : 99
