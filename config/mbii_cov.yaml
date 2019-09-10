@@ -1,8 +1,8 @@
 
 datafile: /Users/hattifattener/Documents/ias/mbii/modelling_paper/data/fits/real/2pt_ia_mbii_composite.fits
-nbins : 10
+nbins : 12
 rlim : [0.1,33]
-correlations : wgg
+correlations : wgp wpp wgg
 cosmology : mbii
 box_size : 100.
 ng : 0.11356
@@ -13,6 +13,15 @@ bias: 1.
 
 redshifts : 0.062 0.300 0.625 1.00
 
+
 savedir : mbii/2pt/txt/
-shapes : data/cats/fits/MBII_85_non-reduced_galaxy_shapes.fits
-positions : data/cats/fits/MBII_85_non-reduced_galaxy_shapes.fits
+shapes : data/cats/fits/MBII_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+positions : data/cats/fits/MBII_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+snapshots : 85 79 73 68
+njk : 3
+
+fits:
+  output : 2pt_mbii.fits
+  snapshots : 85 79 73 68
+  correlations : wgp wpp wgg
+  covariance : mbii/cov/jk_covmat.txt
