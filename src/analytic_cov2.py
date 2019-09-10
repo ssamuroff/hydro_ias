@@ -34,7 +34,7 @@ class Cov:
 
 		print('Setting up Hankel transform')
 		print("This initialisation step takes a little while, but the integration is quick once it's done.")
-		#self.transform = sukhdeep.hankel_transform(rmin=self.settings['rlim'][0]*0.95, rmax=self.settings['rlim'][1]+20, kmin=self.settings['kmin'], kmax=self.settings['kmax'], j_nu=[0,2,4], n_zeros=91000)
+		self.transform = sukhdeep.hankel_transform(rmin=self.settings['rlim'][0]*0.95, rmax=self.settings['rlim'][1]+10, kmin=self.settings['kmin'], kmax=self.settings['kmax'], j_nu=[0,2,4], n_zeros=9100)
 
 		print('Done')
 		return None
@@ -46,7 +46,6 @@ class Cov:
 			ndim+=len(fits[name]['VALUE'].read())
 
 		self.block = np.zeros((ndim,ndim)) - 9999.
-		self.noise_block = np.zeros((ndim,ndim)) - 9999.
 		print('Initialised %dx%d covariance matrix'%(ndim,ndim))
 
 		self.settings['rmin'] = fits['wgg']['SEP'][:].min()
@@ -61,6 +60,28 @@ class Cov:
 			return self.settings['bias']
 		elif pk_name=='galaxy_power':
 			return self.settings['bias'] * self.settings['bias'] 
+
+	def get_aia(self,pk_name):
+		if pk_name=='galaxy_power':
+			return 1.
+		elif pk_name=='galaxy_intrinsic_power':
+			return self.settings['aia']
+		elif pk_name=='intrinsic_power':
+			return self.settings['aia'] * self.settings['aia'] 
+
+	def choose_noise(self, m1, m2, z1, z2):
+
+		s = self.settings['sigma_e']
+		ng = self.settings['ng']
+
+		if (m1!=m2):
+			return 0
+
+		elif (m1=='g'):
+			return s*s/ng
+
+		elif (m1=='p'):
+			return 1./ng
 
 	def get_pk(self, meas1, meas2, zbin1, zbin2):
 
@@ -79,14 +100,17 @@ class Cov:
 		# this should be a 2D grid, nk x nz
 		pk_name = get_pk_name(meas1,meas2)
 		bg = self.get_bias(pk_name)
+		A_IA = self.get_aia(pk_name)
 
-		P = np.loadtxt('data/theory/pk/%s/%s/p_k.txt'%(self.settings['cosmology'],pk_name)) * bg
-		k = np.loadtxt('data/theory/pk/%s/%s/k_h.txt'%(self.settings['cosmology'],pk_name))
-		z = np.loadtxt('data/theory/pk/%s/%s/z.txt'%(self.settings['cosmology'],pk_name))
+		P = np.loadtxt('data/pk/%s/%s/p_k.txt'%(self.settings['cosmology'],pk_name)) * bg * A_IA
+		k = np.loadtxt('data/pk/%s/%s/k_h.txt'%(self.settings['cosmology'],pk_name))
+		z = np.loadtxt('data/pk/%s/%s/z.txt'%(self.settings['cosmology'],pk_name))
 
 		if zbin1!=zbin2:
 			return k, np.zeros_like(P[0])
 
+		N = self.choose_noise(meas1,meas2,zbin1,zbin2)
+		P+=N
 
 		if len(P[P>0])==len(P):
 			logint = True
@@ -170,7 +194,7 @@ class Cov:
 
 
 
-	def write(self, i0, j0, cosvar, noise):
+	def write(self, i0, j0, cosvar):
 		dx = len(cosvar[0])
 		dy = len(cosvar.T[0])
 
@@ -182,9 +206,6 @@ class Cov:
 
 		self.block[j0:j0+dy, i0:i0+dx] = cosvar
 		self.block[i0:i0+dx, j0:j0+dy] = cosvar.T
-
-		self.noise_block[j0:j0+dy, i0:i0+dx] = noise
-		self.noise_block[i0:i0+dx, j0:j0+dy] = noise.T
 
 
 		i0+=dx

@@ -1,5 +1,5 @@
 
-datafile: /Users/hattifattener/Documents/ias/mbii/modelling_paper/data/fits/real/2pt_ia_mbii_composite.fits
+datafile: data/2pt/fits/2pt_mbii_jkcov.fits
 nbins : 12
 rlim : [0.1,33]
 correlations : wgp wpp wgg
@@ -8,7 +8,7 @@ box_size : 100.
 ng : 0.11356
 sigma_e : 0.411
 kmin : 0.06
-kmax : 5000
+kmax : 60
 bias: 1.
 
 redshifts : 0.062 0.300 0.625 1.00
