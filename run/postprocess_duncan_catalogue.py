@@ -64,9 +64,11 @@ def export(filename, cat, new_columns, column_names, extra_files=[]):
 		print('%d columns'%ncol)
 
 		cmask = np.argsort(new['gal_id'])
-		import pdb ; pdb.set_trace()
 		for name in new.dtype.names:
 			out_dict[name] = new[name][cmask]
+			if name in ['x','y','z']:
+				print('converting column %s h^-1 kpc--> h^-1 Mpc'%name)
+				out_dict[name]/=1e3
 
 	print(out_dict.keys())
 

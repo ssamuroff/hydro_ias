@@ -9,7 +9,10 @@ args = parser.parse_args()
 options = yaml.load(open(args.config))
 
 correlations = options['correlations'].split()
-snapshots = np.array(options['snapshots'].split()).astype(int)
+ss = options['snapshots']
+if isinstance(ss,str):
+    ss = ss.split()
+snapshots = np.atleast_1d(ss).astype(int)
 
 for correlation in correlations:
 	for snapshot in snapshots:
