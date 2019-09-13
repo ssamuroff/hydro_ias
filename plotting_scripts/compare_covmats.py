@@ -13,7 +13,7 @@ plt.style.use('y1a1')
 
 colours = ['darkmagenta','midnightblue']
 ls = ['-','--']
-labels=['Jackknife', 'Analytic']
+labels=[r'\textbf{Jackknife}', r'\textbf{Analytic}']
 fontsize=16
 
 file1 = sys.argv[-1]
@@ -198,9 +198,10 @@ plt.imshow(S,cmap='seismic',interpolation='none', origin='lower')
 plt.clim(-1,1)
 plt.colorbar()
 
-plt.annotate(labels[0], xy=(2,131), fontsize=fontsize)
-plt.annotate(labels[1], xy=(108,2), fontsize=fontsize)
+plt.annotate(labels[0], xy=(2,133), fontsize=fontsize)
+plt.annotate(labels[1], xy=(104,4), fontsize=fontsize)
 
 
 
 plt.savefig('corrmat.pdf')
+plt.savefig('corrmat.png')

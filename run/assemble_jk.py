@@ -35,7 +35,8 @@ plt.xscale('log')
 plt.savefig('jktest.png')
 plt.close()
 dv = np.array(dv)
-
+#dv[13,:]=dv[0,:]
+#import pdb ; pdb.set_trace()
 
 nreal = dv.shape[0]
 wmean = np.mean(dv,axis=0)
