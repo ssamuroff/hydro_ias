@@ -53,21 +53,23 @@ class Cov:
 		return None
 
 
-	def get_bias(self,pk_name):
+	def get_bias(self,pk_name,i):
+		bias = float(np.atleast_1d(self.settings['bias'].split())[i])
 		if pk_name=='intrinsic_power':
 			return 1.
 		elif pk_name=='galaxy_intrinsic_power':
-			return self.settings['bias']
+			return bias
 		elif pk_name=='galaxy_power':
-			return self.settings['bias'] * self.settings['bias'] 
+			return bias * bias
 
-	def get_aia(self,pk_name):
+	def get_aia(self,pk_name,i):
+		A = float(np.atleast_1d(self.settings['aia'].split())[i])
 		if pk_name=='galaxy_power':
 			return 1.
 		elif pk_name=='galaxy_intrinsic_power':
-			return self.settings['aia']
+			return A
 		elif pk_name=='intrinsic_power':
-			return self.settings['aia'] * self.settings['aia'] 
+			return A * A
 
 	def choose_noise(self, m1, m2, z1, z2):
 
@@ -78,10 +80,10 @@ class Cov:
 			return 0
 
 		elif (m1=='g'):
-			return s*s/ng
+			return 1./ng
 
 		elif (m1=='p'):
-			return 1./ng
+			return s*s/ng
 
 	def get_pk(self, meas1, meas2, zbin1, zbin2):
 
@@ -99,8 +101,8 @@ class Cov:
 		# load the theory power spectrum
 		# this should be a 2D grid, nk x nz
 		pk_name = get_pk_name(meas1,meas2)
-		bg = self.get_bias(pk_name)
-		A_IA = self.get_aia(pk_name)
+		bg = self.get_bias(pk_name, zbin1)
+		A_IA = self.get_aia(pk_name, zbin1)
 
 		P = np.loadtxt('data/pk/%s/%s/p_k.txt'%(self.settings['cosmology'],pk_name)) * bg * A_IA
 		k = np.loadtxt('data/pk/%s/%s/k_h.txt'%(self.settings['cosmology'],pk_name))
