@@ -12,7 +12,8 @@ plt.style.use('y1a1')
 files = sys.argv[1:]
 
 correlations = ['wgp','wpp', 'wgg']
-snapshots = [85, 79, 73, 68]
+#snapshots = [85, 79, 73, 68]
+snapshots=[135]
 
 base = os.path.dirname(files[0])
 
