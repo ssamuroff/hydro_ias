@@ -29,4 +29,4 @@ fits:
   output : 2pt_mbii.fits
   snapshots : 85 79 73 68
   correlations : wgp wpp wgg
-  covariance : mbii/cov/covmat-analytic.txt
+  covariance : mbii/cov/covmat-analytic-iteration3.txt

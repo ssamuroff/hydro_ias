@@ -36,4 +36,13 @@ redshifts : 0.000 0.300 0.625 1.00
 savedir : illustris/2pt/txt/
 shapes : data/cats/fits/Illustris-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 positions : data/cats/fits/Illustris-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
+
 snapshots : 135 114 98 85
+#114 98 85
+njk : 3
+
+fits:
+  output : 2pt_illustris.fits
+  snapshots : 135 114 98 85
+  correlations : wgp wpp wgg
+  covariance : illustris/cov/covmat-analytic-iteration2.txt
