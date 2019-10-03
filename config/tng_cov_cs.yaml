@@ -18,12 +18,12 @@ shapes : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 positions : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 njk : 4
 
-snapshots : 99 
-# 78 62 50
+snapshots : 99 78 62 50
 
+split_type : central satellite
 
 fits:
   output : 2pt_tng.fits
   snapshots : 99 78 62 50
   correlations : wgp wpp wgg
-  covariance : tng/cov/covmat-analytic-iteration3.txt
+  covariance : tng/cov/covmat-analytic-iteration5.txt
