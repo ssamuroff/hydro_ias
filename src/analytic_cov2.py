@@ -13,7 +13,7 @@ from src import hankel_transform as sukhdeep
 from src import power_spectra as pkutil
 from astropy.cosmology import FlatLambdaCDM
 
-cosmologies ={'mbii': FlatLambdaCDM(H0=69., Om0=0.30, Ob0=0.048), 'tng':FlatLambdaCDM(H0=6774., Om0=0.3089, Ob0=0.0486)}
+cosmologies ={'mbii': FlatLambdaCDM(H0=69., Om0=0.30, Ob0=0.048), 'tng':FlatLambdaCDM(H0=67.74, Om0=0.3089, Ob0=0.0486), 'illustris':FlatLambdaCDM(H0=70.04, Om0=0.2726, Ob0=0.0456)}
 
 kernels = {'gg':0,'gp':2,'pp':(0,4)}
 
@@ -53,6 +53,15 @@ class Cov:
 		return None
 
 
+	def get_sigmae(self,i):
+		s = float(np.atleast_1d(self.settings['sigma_e'].split())[i])
+		return s
+
+	def get_ng(self,i):
+		s = float(np.atleast_1d(self.settings['ng'].split())[i])
+		return s
+
+
 	def get_bias(self,pk_name,i):
 		bias = float(np.atleast_1d(self.settings['bias'].split())[i])
 		if pk_name=='intrinsic_power':
@@ -73,8 +82,8 @@ class Cov:
 
 	def choose_noise(self, m1, m2, z1, z2):
 
-		s = self.settings['sigma_e']
-		ng = self.settings['ng']
+		s = self.get_sigmae(z1)
+		ng = self.get_ng(z1)
 
 		if (m1!=m2):
 			return 0
@@ -145,6 +154,7 @@ class Cov:
 				# downsample to the scale bins required
 				r_edges1, C1 = self.transform.bin_cov(r=r_cov, cov=block, bin_center=r1)
 				r_edges2, C2 = self.transform.bin_cov(r=r_cov2, cov=block2, bin_center=r2)
+				#import pdb ; pdb.set_trace()
 				resampled_block+=C1+C2
 
 
@@ -215,7 +225,7 @@ class Cov:
 		return i0,j0
 
 	def save(self):
-		filename = 'covmat-analytic.txt'
+		filename = '%s-covmat-analytic.txt'%self.settings['cosmology']
 		np.savetxt(filename, self.block)
 		return None
 
