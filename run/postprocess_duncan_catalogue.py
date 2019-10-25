@@ -73,9 +73,9 @@ def export(filename, cat, new_columns, column_names, extra_files=[]):
 	print(out_dict.keys())
 
 	M0 = 3.328 * 1e8
-	mask = (out_dict['stellar_mass_all']>=M0) & (out_dict['npart_stellar']>=300)
-	for name in out_dict.keys():
-		out_dict[name] = out_dict[name][mask]
+	#mask = (out_dict['stellar_mass_all']>=M0) & (out_dict['npart_stellar']>=300)
+	#for name in out_dict.keys():
+	#	out_dict[name] = out_dict[name][mask]
 
 	print(len(out_dict['gal_id']))
 

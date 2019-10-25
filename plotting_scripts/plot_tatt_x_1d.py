@@ -1,5 +1,6 @@
 import numpy as np
 import pylab as plt
+from pylab import gca
 plt.switch_backend('pdf')
 plt.style.use('y1a1')
 from matplotlib import rcParams
@@ -15,42 +16,47 @@ rcParams['ytick.direction']='in'
 
 
 x = np.array([0.06,0.3,0.625,1.0])
-c1_mbii = np.array([8.250003e-01, 5.419721e-01, 1.183762e+00,1.578299e+00])
-dc1_mbii = np.array([4.424263e-01, 6.449061e-01, 4.431620e-01,3.906427e-01])
-c2_mbii = np.array([9.955508e-01, 4.638071e+00, 7.108131e-01,1.053010e+00])/5.
-dc2_mbii = np.array([4.770114e+00, 7.028168e+00, 4.794870e+00,4.251943e+00])/5.
+c1_mbii = np.array([2.233617e+00, 2.589747e+00, 3.946869, 3.652523])
+dc1_mbii = np.array([1.011978e+00, 1.236754e+00, 1.116997, 1.614252])
+c2_mbii = np.array([-2.042458e+00, -8.135084e-01, -2.708013, -1.381410])
+dc2_mbii = np.array([1.220132e+00, 1.712656e+00, 1.605700, 2.677612])
 
 x0 = np.array([0.00,0.3,0.625,1.0])
-c1_tng = np.array([5.687184e-01, 5.371325e-01, 8.156881e-01, 7.746648e-01])
-dc1_tng = np.array([9.912863e-02, 1.081440e-01, 1.301491e-01, 9.273534e-02 ])
-c2_tng = np.array([5.135676e-01, 7.497391e-01, 4.337997e-01, -3.345032e-02])
-dc2_tng = np.array([2.130554e-01, 2.102555e-01, 2.793867e-01, 2.091460e-01])
+c1_tng = np.array([1.280880, 1.719139, 1.419545e+00, 2.411039e+00])
+dc1_tng = np.array([4.643513e-01, 3.741442e-01, 4.732864e-01, 4.345985e-01])
+c2_tng = np.array([-8.104039e-04, 3.099278e-01,  6.262324e-01, 4.002749e-01])
+dc2_tng = np.array([7.065338e-01, 6.757297e-01, 8.363686e-01, 8.714733e-01])
 
-c1_ill = np.array([2.445613e-01, 7.898489e-01, 3.531482e-01, -1.599661e-01 ])
-dc1_ill = np.array([1.491332e-01,  2.050607e-01, 1.567092e-01, 1.805179e-01 ])
-c2_ill = np.array([1.615803e-01, 4.404832e-01, 1.733408e-01, 6.418761e-01])
-dc2_ill = np.array([3.035423e-01, 4.080502e-01, 2.957249e-01, 2.858957e-01])
+
+
+c1_ill = np.array([5.174988e-01,4.456189e-01,8.028623e-01,1.003845e+00])
+dc1_ill = np.array([4.194155e-01,5.896701e-01,3.988615e-01,4.819666e-01])
+c2_ill = np.array([6.446993e-01,-5.844958e-02,9.229198e-01,8.558878e-01])
+dc2_ill = np.array([8.302430e-01,1.076488e+00,8.378793e-01,9.453206e-01])
 
 
 
 plt.close()
 plt.subplot(111)
-plt.errorbar(x+0.01,c1_tng,dc1_tng,color='darkmagenta',linestyle='none', label='IllustrisTNG $(A_1)$', marker='^')
-plt.errorbar(x-0.01,c2_tng,dc2_tng,color='darkmagenta',linestyle='none', label='IllustrisTNG $(A_2)$', marker='v')
-plt.errorbar(x+0.02,c1_mbii,dc1_mbii,color='midnightblue',linestyle='none', label='MBII $(A_1)$', marker='^')
-plt.errorbar(x-0.02,c2_mbii,dc2_mbii,color='midnightblue',linestyle='none', label='MBII $(A_2)$', marker='v')
-plt.errorbar(x+0.03,c1_ill,dc1_ill,color='forestgreen',linestyle='none', label='Illustris $(A_1)$', marker='^')
-plt.errorbar(x-0.03,c2_ill,dc2_ill,color='forestgreen',linestyle='none', label='Illustris $(A_2)$', marker='v')
+t1 = plt.errorbar(x+0.01,c1_tng,dc1_tng,color='darkmagenta',linestyle='none', label='TNG $(A_1)$', marker='^')
+t2 = plt.errorbar(x-0.01,c2_tng,dc2_tng,color='darkmagenta',linestyle='none', label='TNG $(A_2)$', marker='v')
+m1 = plt.errorbar(x+0.02,c1_mbii,dc1_mbii,color='midnightblue',linestyle='none', label='MBII $(A_1)$', marker='^')
+m2 = plt.errorbar(x-0.02,c2_mbii,dc2_mbii,color='midnightblue',linestyle='none', label='MBII $(A_2)$', marker='v')
+i1 = plt.errorbar(x+0.03,c1_ill,dc1_ill,markeredgecolor='forestgreen', ecolor='forestgreen', markerfacecolor='white',linestyle='none', label='Illustris $(A_1)$', marker='^')
+i2 = plt.errorbar(x-0.03,c2_ill,dc2_ill,markeredgecolor='forestgreen', ecolor='forestgreen', markerfacecolor='white',linestyle='none', label='Illustris $(A_2)$', marker='v')
 
 plt.xlim(0,1.1)
 plt.xticks(visible=True)
 #plt.yticks([1.5,2,2.5,3.0], fontsize=16)
-plt.ylim(-0.9,4)
+plt.ylim(-4,7.2)
 plt.axhline(0,color='k',ls=':')
-plt.legend(fontsize=12, loc='upper left')
+l1 = plt.legend([t1,m1,i1], ["TNG $(A_1)$", "MBII $(A_1)$", "Illustris $(A_1)$"], fontsize=12, loc='upper left')
+l2 = plt.legend([t2,m2,i2], ["TNG $(A_2)$", "MBII $(A_2)$", "Illustris $(A_2)$"], fontsize=12, loc='upper center')
+gca().add_artist(l1)
+
 plt.ylabel(r'$A_{i}$', fontsize=16)
 
 plt.xlabel('Redshift $z$', fontsize=16)
-plt.subplots_adjust(hspace=0,wspace=0,bottom=0.14,left=0.14)
+plt.subplots_adjust(hspace=0,wspace=0,bottom=0.14,left=0.14, right=0.98, top=0.98)
 plt.savefig('ai_redshift.pdf')
 plt.savefig('ai_redshift.png')

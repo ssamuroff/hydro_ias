@@ -3,7 +3,7 @@ import numpy as np
 import numpy.linalg as npl
 import numpy.fft as npf
 from scipy.ndimage import gaussian_filter
-import pyfits as fits
+#import pyfits as fits
 #from mb2 import *
 from numpy.core.records import fromarrays
 import fitsio as fi
@@ -111,12 +111,12 @@ def build_shape_cube(snap, resolution=512, npart=1024):
 
     return sij, sigma
 
-def gen_shape_cubes(snaps=[]):
+def gen_shape_cubes(snaps=[], resolution=512):
     """
     Outputs a fits file with the density cube for the corresponding snapshots
     """
     for sn in snaps:
-        gamma, dgamma = build_shape_cube(sn)
+        gamma, dgamma = build_shape_cube(sn, resolution=resolution)
         fits.writeto("stellar_shape_%03d.fits"%(sn), gamma)
         fits.writeto("stellar_shape_var_%03d.fits"%(sn), dgamma)
 
@@ -127,8 +127,9 @@ def build_density_cube(snap, resolution=512, npart=1024, ptype='dm'):
     """
     base_name = base_dir+ 'snapdir_%03d/snapshot_%03d'%(snap,snap)
 
-    # Read the size of the box in mpc
-    boxsize = readheader(base_name, 'boxsize')
+    # Read the size of the box in Mpc
+    boxsize = 205
+    #readheader(base_name, 'boxsize')
 
 
     density = np.zeros((resolution,resolution,resolution))
@@ -141,13 +142,13 @@ def build_density_cube(snap, resolution=512, npart=1024, ptype='dm'):
 
     return density
 
-def gen_density_cubes(snaps=[], ptype='dm'):
+def gen_density_cubes(snaps=[], ptype='dm', resolution=512):
     """
     Outputs a fits file with the density cube for the corresponding snapshots
     """
     for sn in snaps:
-        dens = build_density_cube(sn, ptype=ptype)
-        fits.writeto("%s_density_%03d.fits"%(pytype,sn), dens)
+        dens = build_density_cube(sn, ptype=ptype, resolution=resolution)
+        fits.writeto("%s_density_%03d_%d.fits"%(pytype,sn,resolution), dens)
 
 def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
     """
@@ -170,14 +171,14 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
     import pdb ; pdb.set_trace()
     return tidal_tensor
 
-def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm'):
+def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', pixel_size=0.1953):
     """
     Computes the tidal tensor for the snapshots provided
     """
     for i in snaps:
         dens = fits.getdata(dens_dir+'%s_density_%03d.fits'%(ptype,i))
         for s in smoothing:
-            tid  = compute_tidal_tensor(dens,smoothing=s)
+            tid  = compute_tidal_tensor(dens,smoothing=s, pixel_size=pixel_size)
             fits.writeto(dens_dir+'%s_tidal_%03d_%0.2f.fits'%(ptype,i,s), tid)
             # Diagonalise the tidal matrix while we are at it
             vals, vects = npl.eigh(tid)

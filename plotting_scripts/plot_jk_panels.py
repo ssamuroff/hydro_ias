@@ -25,14 +25,14 @@ D2 = np.sqrt(np.diag(np.loadtxt(path2)))
 label1 = 'jackknife'
 label2 = 'analytic'
 
-x,w=np.loadtxt('mbii/2pt/txt/wgg_85.txt').T
+x,w=np.loadtxt('tng/2pt/txt/wgg_99.txt').T
 
-def set_basic(ctype, yticks=True):
+def set_basic(ctype, yticks=True, xticks=False):
 	plt.axvspan(0.001,6,color='grey',alpha=0.1)
 	plt.xscale('log')
 	plt.yscale('log')
 	plt.xlim(8e-2,210)
-	plt.xticks([0.1,1,10,100],visible=False)
+	plt.xticks([1,10,100],visible=xticks, fontsize=fontsize)
 
 	if ctype=='gg':
 		plt.ylim(0.7,40)
@@ -55,7 +55,6 @@ xmax = 210
 dx=10**0.05
 
 
-# eBOSS
 plt.subplot(341)
 set_basic('gg', yticks=True)
 
@@ -157,7 +156,7 @@ plt.plot(x, dy2, color='k', linestyle='--', lw=1.5)
 plt.subplot(349)
 
 
-set_basic('pp', yticks=True)
+set_basic('pp', yticks=True, xticks=True)
 plt.ylabel(r'$\sigma ( w_{++} )$', fontsize=fontsize)
 
 dy1 = D1[48:60]
@@ -170,7 +169,7 @@ plt.xlabel(r'$r_{\rm p}$ / $h^{-1}$ Mpc', fontsize=fontsize)
 
 
 plt.subplot(3,4,10)
-set_basic('pp', yticks=False)
+set_basic('pp', yticks=False, xticks=True)
 
 dy1 = D1[60:72]
 dy2 = D2[60:72]
@@ -183,7 +182,7 @@ plt.xlabel(r'$r_{\rm p}$ / $h^{-1}$ Mpc', fontsize=fontsize)
 
 
 plt.subplot(3,4,11)
-set_basic('pp', yticks=False)
+set_basic('pp', yticks=False, xticks=True)
 
 dy1 = D1[72:84]
 dy2 = D2[72:84]
@@ -197,7 +196,7 @@ plt.xlabel(r'$r_{\rm p}$ / $h^{-1}$ Mpc', fontsize=fontsize)
 
 
 plt.subplot(3,4,12)
-set_basic('pp', yticks=False)
+set_basic('pp', yticks=False, xticks=True)
 
 dy1 = D1[84:96]
 dy2 = D2[84:96]

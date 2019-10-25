@@ -13,7 +13,9 @@ files = sys.argv[1:]
 
 correlations = ['wgp','wpp', 'wgg']
 #snapshots = [85, 79, 73, 68]
-snapshots=[135]
+#snapshots=[135]
+snapshots = [99,78,62,50]
+
 
 base = os.path.dirname(files[0])
 

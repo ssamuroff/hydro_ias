@@ -27,12 +27,17 @@ logm2 = np.log10(fi.FITS(path2)[-1].read()['stellar_mass_all'])
 logm3 = np.log10(fi.FITS(path3)[-1].read()['stellar_mass_all'])
 
 
+
+
 H1,b1 = np.histogram(logm1,bins=np.linspace(8,13,90), normed=False)
-H1=H1*1./V['mbii']
+
+dM = b1[1] - b1[0]  
+
+H1=H1*1./V['mbii']/dM
 H2,b2 = np.histogram(logm2,bins=np.linspace(8,13,90), normed=False)
-H2=H2*1./V['illustris']
+H2=H2*1./V['illustris']/dM
 H3,b3 = np.histogram(logm3,bins=np.linspace(8,13,90), normed=False)
-H3=H3*1./V['tng']
+H3=H3*1./V['tng']/dM
 
 x = get_x(b1)
 
@@ -61,7 +66,7 @@ plt.plot(x,H2,ls='-',lw=1.5,color='forestgreen',label='Illustris-1')
 plt.plot(x,H3,ls='-',lw=1.5,color='darkmagenta',label='TNG')
 
 
-plt.ylabel(r'Mass Function $\mathrm{log} \mathit{\Phi} (M_*)$', fontsize=16)
+plt.ylabel(r'Mass Function $\mathit{\Phi} (M_*)$', fontsize=16)
 plt.xlabel(r'Stellar Mass $\mathrm{log}M_*$ / $h^{-1} M_{\odot}$', fontsize=16)
 plt.yticks(visible=True)
 
@@ -155,3 +160,30 @@ def cmdens(N,L):
 cmdens(logm1.size,100)
 cmdens(logm2.size,75)
 cmdens(logm3.size,205)
+
+
+from scipy.special import gamma as gamma_function
+p0 = 0.766
+M0 = 0.41031e9
+alpha = 1.764
+beta = 0.384
+pg = 0.557e-2
+Mg = 4.7802e9
+gamma = 0.053
+rho = 0.276e9
+
+def mf(x):
+	V1 = p0 * beta * (x/M0)**alpha * np.exp(-(x/M0)**beta) / gamma_function(alpha/beta)
+	V2 = pg * (x/Mg)**gamma * np.exp(-(x/Mg))
+	return V1 + V2
+
+
+x = np.logspace(9,12.5,100)
+y = mf(x)
+plt.plot(x,y/x)
+plt.xscale('log')
+plt.yscale('log')
+plt.savefig('tmp.png')
+
+
+

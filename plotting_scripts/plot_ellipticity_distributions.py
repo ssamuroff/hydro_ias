@@ -57,9 +57,9 @@ H_mb2, b = np.histogram(quad(mbii['e1'],mbii['e2']), bins=np.linspace(0,1., 200)
 
 x = (b[:-1]+b[1:])/2
 
-plt.plot(x, H_tng, color='darkmagenta', ls='-', label='TNG300')
-plt.plot(x, H_mb2, color='midnightblue', ls='-', label='MBII')
-plt.plot(x, H_ill, color='forestgreen', ls='-', label='Illustris-1')
+plt.plot(x, H_tng, color='darkmagenta', ls='-')
+plt.plot(x, H_mb2, color='midnightblue', ls='-')
+plt.plot(x, H_ill, color='forestgreen', ls='-')
 
 plt.fill_between(x, H_tng, color='darkmagenta', alpha=0.15)
 plt.fill_between(x, H_mb2, color='midnightblue', alpha=0.15)
@@ -68,7 +68,7 @@ plt.fill_between(x, H_ill, color='forestgreen', alpha=0.15)
 plt.ylim(ymin=0)
 plt.yticks(visible=False)
 plt.xlim(0,0.65)
-plt.subplots_adjust(bottom=0.14)
+plt.subplots_adjust(bottom=0.14, left=0.14, top=0.98, right=0.98)
 
 plt.xlabel('Ellipticity $e$', fontsize=16)
 plt.legend(loc='upper right')
