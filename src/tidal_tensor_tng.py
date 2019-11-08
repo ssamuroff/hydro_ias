@@ -30,7 +30,7 @@ def build_shape_cube(snap, resolution=512, npart=1024):
     base_name = base_dir+ 'snapdir_%03d/snapshot_%03d'%(snap,snap)
 
     # Read the size of the box in Mpc
-    boxsize = 205
+    boxsize = 205 # TNG300 value, again
     #readheader(base_name, 'boxsize')/1000 # h^-1 Mpc
 
 
@@ -72,35 +72,11 @@ def build_shape_cube(snap, resolution=512, npart=1024):
         sij[ix,iy,iz,:,:] += I
         num[ix,iy,iz,:,:] += 1
 
-    import pdb ; pdb.set_trace()
     sij /= num
     sij[np.isinf(sij)]=0
     sij[np.isnan(sij)]=0
 
-   # import pdb ; pdb.set_trace()
-
-    # also process the shape dispersion per bin
-#    for i in range(ngal):
-#        print ("Processing sigma for galaxy %d/%d"%(i,ngal))
-#
-#        # put this galaxy into a cell
-#        info = shape_cat[i]
-#        ix = np.argwhere((shape_cat['x'][i]>=lower) & (shape_cat['x'][i]<upper))[0,0]
-#        iy = np.argwhere((shape_cat['y'][i]>=lower) & (shape_cat['y'][i]<upper))[0,0]
-#        iz = np.argwhere((shape_cat['z'][i]>=lower) & (shape_cat['z'][i]<upper))[0,0]
-#
-#        # reconstruct the 3x3 shape matrix for this galaxy
-#        a0 = np.array([shape_cat['av_x'][i],shape_cat['av_y'][i],shape_cat['av_z'][i]]) * shape_cat['a'][i]
-#        b0 = np.array([shape_cat['bv_x'][i],shape_cat['bv_y'][i],shape_cat['bv_z'][i]]) * shape_cat['b'][i]
-#        c0 = np.array([shape_cat['cv_x'][i],shape_cat['cv_y'][i],shape_cat['cv_z'][i]]) * shape_cat['c'][i]
-#        I = np.array([a0,b0,c0])
-#
-#        # add it to the correct cell
-#        sigma[ix,iy,iz,:,:] += (I-sij[ix,iy,iz,:,:]) * (I-sij[ix,iy,iz,:,:])
-
-
     del(shape_cat)
-    #del(num)
     del(X)
     del(Y)
     del(Z)
@@ -108,14 +84,6 @@ def build_shape_cube(snap, resolution=512, npart=1024):
     del(lower)
     del(upper)
     gc.collect()
-
-#    for i in range(3):
-#        for j in range(3):
-#            sigma[:,:,:,i,j] /= num
-#            sigma[:,:,:,i,j] = np.sqrt(sigma[:,:,:,i,j])
-#
-#    sigma[np.isinf(sigma)]=0
-#    sigma[np.isnan(sigma)]=0
 
     return sij
 
@@ -127,7 +95,11 @@ def gen_shape_cubes(snaps=[], resolution=512):
         gamma = build_shape_cube(sn, resolution=resolution)
         outfits = fi.FITS("stellar_shape_vects_%03d_%d.fits"%(sn,resolution), 'rw')
         outfits.write(gamma)
+        outfits.close()
         #fits.writeto("stellar_shape_var_%03d.fits"%(sn), dgamma)
+
+    print('Done all.')
+    return None
 
 
 def build_density_cube(snap, resolution=512, npart=600, ptype='dm'):
@@ -146,13 +118,10 @@ def build_density_cube(snap, resolution=512, npart=600, ptype='dm'):
 
     density = np.zeros((resolution,resolution,resolution))
     # Compute the density cube by reading each file one by one
-    #for i in range(npart):
-     #   print ("Processing part %d/%d"%(i,npart)) 
 
     for j in range(npart):
         f = h5py.File(snapPath(basePath, snap, chunkNum=j), 'r')
         print(j)
-        #import pdb ; pdb.set_trace()
         header = dict(f['Header'].attrs.items())
         ptcl_coords = f[gName]["Coordinates"][:]/1000.
         hist,edges = np.histogramdd(ptcl_coords, resolution, range=[[0,boxsize],[0,boxsize],[0,boxsize]])
@@ -175,6 +144,9 @@ def gen_density_cubes(snaps=[], ptype='dm', resolution=512):
         outfits.write(dens)
         outfits.close()
 
+    print('Done all.')
+    return None
+
 def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
     """
     Computes the tidal tensor given a density field
@@ -196,23 +168,32 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
             temp[0,0,0] = 0
 
             tidal_tensor[:,:,:,i,j] = npf.ifftn(temp).real
-            import pdb ; pdb.set_trace()
     
     return tidal_tensor
 
-def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512):
+def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512, box_size=205.):
     """
-    Computes the tidal tensor for the snapshots provided
+    Computes the tidal tensor for the snapshots provided.
+    The default box size is the right value for TNG300 - need to adjust if/when using other sims
     """
+
     for i in snaps:
         dens = fi.FITS(dens_dir+'%s_density_%03d_%d.fits'%(ptype,i,resolution))[-1].read()
         for s in smoothing:
-            tid  = compute_tidal_tensor(dens, smoothing=s, pixel_size=205./resolution)
+            tid  = compute_tidal_tensor(dens, smoothing=s, pixel_size=box_size./resolution)
             out = fi.FITS(dens_dir+'%s_tidal_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(tid) ; out.close()
             # Diagonalise the tidal matrix while we are at it
             vals, vects = npl.eigh(tid)
-            out = fi.FITS(dens_dir+'%s_tidal_vals_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(vals) ; out.close()
-            out = fi.FITS(dens_dir+'%s_tidal_vects_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(vects) ; out.close()
+            out = fi.FITS(dens_dir+'%s_tidal_vals_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') 
+            out.write(vals)
+            out.close()
+            
+            out = fi.FITS(dens_dir+'%s_tidal_vects_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') 
+            out.write(vects)
+            out.close()
+
+    print('Done all.')
+    return None
 
 def snapPath(basePath, snapNum, chunkNum=0):
     """ Return absolute path to a snapshot HDF5 file (modify as needed). """
