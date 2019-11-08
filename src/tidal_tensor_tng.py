@@ -17,8 +17,8 @@ plt.style.use('y1a1')
 
 
 base_dir = '/physics/nkhandai/mb2/snapdir/'
-dens_dir = '/Volumes/groke/'
-#'/home/rmandelb.proj/ssamurof/mb2_tidal/'
+#dens_dir = '/Volumes/groke/'
+dens_dir = '/home/rmandelb.proj/ssamurof/mb2_tidal/'
 
 
 
@@ -68,11 +68,11 @@ def build_shape_cube(snap, resolution=512, npart=1024):
         #import pdb ; pdb.set_trace()
 
         # add it to the correct cell
-        sij[ix,iy,iz,:,:] += v
+        sij[ix,iy,iz,:,:] += I
         num[ix,iy,iz,:,:] += 1
 
-    #import pdb ; pdb.set_trace()
-    sij /= num
+    import pdb ; pdb.set_trace()
+    #sij /= num
     sij[np.isinf(sij)]=0
     sij[np.isnan(sij)]=0
 
@@ -124,7 +124,7 @@ def gen_shape_cubes(snaps=[], resolution=512):
     """
     for sn in snaps:
         gamma = build_shape_cube(sn, resolution=resolution)
-        outfits = fi.FITS("stellar_shape_vects_%03d_%d.fits"%(sn,resolution), 'rw')
+        outfits = fi.FITS("stellar_shape_%03d_%d_noavg.fits"%(sn,resolution), 'rw')
         outfits.write(gamma)
         #fits.writeto("stellar_shape_var_%03d.fits"%(sn), dgamma)
 
@@ -180,13 +180,21 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
     """
     nx = dens.shape[0]
 
+    dfilter = True 
+
     print('pixel scale = %3.3f'%pixel_size)
 
     k  = npf.fftfreq(nx)[np.mgrid[0:nx,0:nx,0:nx]]
     tidal_tensor = np.zeros((nx,nx,nx,3,3),dtype=np.float32)
-    tidal_tensor2 = np.zeros((nx,nx,nx,1),dtype=np.float32)
+    gamma = np.zeros((nx,nx,nx,3,3),dtype=np.float32)
     sigma = smoothing/pixel_size
-    fft_dens = npf.fftn(gaussian_filter(dens,sigma,mode='wrap')) # 3D (512 x 512 x 512) grid ; each cell is a k mode
+    if dfilter:
+        print('filtering, sigma=%3.3f'%sigma)
+        G = gaussian_filter(dens,sigma,mode='wrap')
+    else:
+        print('not filtering')
+        G = dens
+    fft_dens = npf.fftn(G) # 3D (512 x 512 x 512) grid ; each cell is a k mode
     for i in range(3):
         for j in range(3):
             # k[i], k[j] are 3D matrices, as is k
@@ -194,22 +202,32 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
             temp[0,0,0] = 0
 
             tidal_tensor[:,:,:,i,j] = npf.ifftn(temp).real
-    import pdb ; pdb.set_trace()
+
+
+    #import pdb ; pdb.set_trace()
     return tidal_tensor
 
 def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512):
     """
     Computes the tidal tensor for the snapshots provided
     """
+
+    A =  6.508621698085799e-4 # 4 * \pi * G * X, where X is the factor to convert an unnormalised 3D histogram
+                              # of TNG dark matter particles to comoving mass density  
+
     for i in snaps:
         dens = fi.FITS(dens_dir+'%s_density_%03d_%d.fits'%(ptype,i,resolution))[-1].read()
         for s in smoothing:
-            tid  = compute_tidal_tensor(dens, smoothing=s, pixel_size=205/resolution)
-            out = fi.FITS(dens_dir+'%s_tidal_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(tid) ; out.close()
+            #import pdb ; pdb.set_trace()
+            #delta=dens/171545.62636702447 - 1
+            dens0 = np.mean(dens)
+            delta=dens/dens.mean() - 1
+            tid  = compute_tidal_tensor(A*dens, smoothing=s, pixel_size=205./resolution)
+            out = fi.FITS(dens_dir+'%s_tidal_%03d_%0.2f_%d_test2.fits'%(ptype,i,s,resolution),'rw') ; out.write(tid) ; out.close()
             # Diagonalise the tidal matrix while we are at it
             vals, vects = npl.eigh(tid)
-            out = fi.FITS(dens_dir+'%s_tidal_vals_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(vals) ; out.close()
-            out = fi.FITS(dens_dir+'%s_tidal_vects_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(vects) ; out.close()
+            out = fi.FITS(dens_dir+'%s_tidal_vals_%03d_%0.2f_%d_test2.fits'%(ptype,i,s,resolution),'rw') ; out.write(vals) ; out.close()
+            out = fi.FITS(dens_dir+'%s_tidal_vects_%03d_%0.2f_%d_test2.fits'%(ptype,i,s,resolution),'rw') ; out.write(vects) ; out.close()
 
 def snapPath(basePath, snapNum, chunkNum=0):
     """ Return absolute path to a snapshot HDF5 file (modify as needed). """
