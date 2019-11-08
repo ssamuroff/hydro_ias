@@ -107,6 +107,7 @@ def build_density_cube(snap, resolution=512, npart=600, ptype='dm'):
     Computes a density cube for the specified snapshot
     """
     base_name = base_dir+ 'snapdir_%03d/snapshot_%03d'%(snap,snap)
+    # This is hard coded, and will remain so until and unless anyone else needs to use it
     basePath = "/Volumes/muskrat/other_peoples_datasets/illustrisTNG/TNG300-1/output/"
 
     # Read the size of the box in mpc
@@ -187,7 +188,7 @@ def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512, box_si
             out = fi.FITS(dens_dir+'%s_tidal_vals_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') 
             out.write(vals)
             out.close()
-            
+
             out = fi.FITS(dens_dir+'%s_tidal_vects_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') 
             out.write(vects)
             out.close()
