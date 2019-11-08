@@ -10,6 +10,7 @@ from numpy.core.records import fromarrays
 import fitsio as fi
 import gc
 import h5py 
+import os
 
 import pylab as plt
 plt.switch_backend('agg')
@@ -65,13 +66,13 @@ def build_shape_cube(snap, resolution=512, npart=1024):
         I = np.dot(v0,np.dot(V,v))
 
         #print(I)
-        #import pdb ; pdb.set_trace()
+       # import pdb ; pdb.set_trace()
 
         # add it to the correct cell
-        sij[ix,iy,iz,:,:] += v
+        sij[ix,iy,iz,:,:] += I
         num[ix,iy,iz,:,:] += 1
 
-    #import pdb ; pdb.set_trace()
+    import pdb ; pdb.set_trace()
     sij /= num
     sij[np.isinf(sij)]=0
     sij[np.isnan(sij)]=0
@@ -168,7 +169,8 @@ def gen_density_cubes(snaps=[], ptype='dm', resolution=512):
     Outputs a fits file with the density cube for the corresponding snapshots
     """
     for sn in snaps:
-        dens = build_density_cube(sn, ptype=ptype)
+        dens = build_density_cube(sn, ptype=ptype, resolution=resolution)
+        os.system("rm /Volumes/groke/%s_density_%03d_%d.fits"%(ptype,sn,resolution))
         outfits = fi.FITS("/Volumes/groke/%s_density_%03d_%d.fits"%(ptype,sn,resolution),'rw')
         outfits.write(dens)
         outfits.close()
@@ -194,7 +196,8 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
             temp[0,0,0] = 0
 
             tidal_tensor[:,:,:,i,j] = npf.ifftn(temp).real
-    import pdb ; pdb.set_trace()
+            import pdb ; pdb.set_trace()
+    
     return tidal_tensor
 
 def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512):
@@ -204,7 +207,7 @@ def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512):
     for i in snaps:
         dens = fi.FITS(dens_dir+'%s_density_%03d_%d.fits'%(ptype,i,resolution))[-1].read()
         for s in smoothing:
-            tid  = compute_tidal_tensor(dens, smoothing=s, pixel_size=205/resolution)
+            tid  = compute_tidal_tensor(dens, smoothing=s, pixel_size=205./resolution)
             out = fi.FITS(dens_dir+'%s_tidal_%03d_%0.2f_%d.fits'%(ptype,i,s,resolution),'rw') ; out.write(tid) ; out.close()
             # Diagonalise the tidal matrix while we are at it
             vals, vects = npl.eigh(tid)
