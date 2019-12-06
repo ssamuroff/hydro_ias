@@ -12,7 +12,7 @@ os.system('rm %s'%filename)
 f = fi.FITS(filename, 'rw')
 
 corrs = options['correlations'].split()
-snapshots = np.array(options['snapshots'].split()).astype(int) 
+snapshots = np.array(str(options['snapshots']).split()).astype(int) 
 
 
 def initialise_empty_dict():
