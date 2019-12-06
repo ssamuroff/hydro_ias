@@ -27,8 +27,11 @@ print('Computing coefficients for redshift z=%f'%z0)
 
 D = spi.interp1d(z,Dz)(z0)
 
-Omega_m = 0.3
+Omega_m = 0.3089 
 
 K = - C1_RHOCRIT * Omega_m / D
+K2 = 5 * C1_RHOCRIT * Omega_m / D / D
+
 
 print('C1 = A1 * %f'%K)
+print('C2 = A2 * %f'%K2)

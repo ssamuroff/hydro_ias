@@ -3,6 +3,7 @@ import sys
 import src.tidal_tensor_tng as tt
 
 snapshots = np.atleast_1d(sys.argv[1:]).astype(int)
+
 resoultion=32
 
 ptype='dm'

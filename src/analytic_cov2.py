@@ -121,22 +121,34 @@ class Cov:
 #			return k, np.zeros_like(P[0])
 
 		N = self.choose_noise(meas1,meas2,zbin1,zbin2)
-		P+=N
 
-		if len(P[P>0])==len(P):
-			logint = True
-			lnpk = np.log(P)
-		else:
-			#print('Negative Pk values - will interpolate in linear space.')
-			logint = False
-			lnpk = P
-
-		interp_pk = interp2d(np.log(k), z, lnpk, kind='linear')
-
-		Pw = interp_pk(np.log(k), self.z[zbin1])
-
+		D = abs(z-self.z[zbin1])
+		ind = np.argwhere(D==D.min())[0,0]
+		Pw = P[ind,:] + N
 
 		return k, Pw
+
+#		if (P.min()>0):
+#			logint = True
+#			lnpk = np.log(P)
+#		else:
+#			#print('Negative Pk values - will interpolate in linear space.')
+#			logint = False
+#			lnpk = P
+#
+#		interp_pk = interp2d(np.log(k), z, lnpk, kind='linear')
+#
+#		Pw = interp_pk(np.log(k), self.z[zbin1])
+#
+#		if logint:
+#			#print('logint')
+#			Pw = 10**Pw
+#			import pdb ; pdb.set_trace()
+#
+#		Pw+=N
+
+
+#		return k, Pw
 
 
 	def evaluate_block(self, r1, r2, a, b, c, d, P1, P2, P3, P4, k):
