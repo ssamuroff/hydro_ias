@@ -31,6 +31,7 @@ class plot2D(plots.MultinestPlots2D):
         super(plot2D, self).__init__(*args, **kwargs)
         self.colors=[ 'darkmagenta', 'k', 'forestgreen','purple','royalblue', 'k','pink','steelblue',"purple", 'k', 'k', 'k', 'k']*10
         self.linestyles=['-','--','-',':']*10
+        pylab.style.use('y1a1')
         matplotlib.rcParams['xtick.major.size'] = 3.5
         matplotlib.rcParams['xtick.minor.size'] = 1.7
         matplotlib.rcParams['ytick.major.size'] = 3.5

@@ -30,4 +30,4 @@ export FID3=out_mbii_gp1_pp1_wgg1_nla2_z3_multinest_fidcov_rmin6_rmax33.txt
 postprocess -o $OUT --no-plots --factor-kde=1.1 -f pdf --extra ../plotting/jk_z3.py $FID3 $JK3 
 
 # and this one to get the stats
-postprocess -o $OUT --no-plots  $FID0 $FID2 $FID3 
+postprocess -o $OUT --no-plots  $FID0 $FID1 $FID2 $FID3 

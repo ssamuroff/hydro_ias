@@ -13,7 +13,7 @@ cd /home/ssamurof/hydro_ias/chains/rundir
 export SAMPLER=multinest
 export DATA=mbii
 export MODEL=tatt2_z3
-export COV=fidcov
+export COV=fidcov_iteration4
 export SAVEFILE=${DATA}_gp1_pp1_wgg1_${MODEL}_${SAMPLER}_${COV}_rmin6_rmax33
 export VALUESFILE=../ini/values_${MODEL}_${DATA}.ini
 export PARAMFILE=../ini/params_${MODEL}.ini

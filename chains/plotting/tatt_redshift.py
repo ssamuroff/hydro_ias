@@ -51,7 +51,7 @@ class plot2D(plots.MultinestPlots2D):
                     #  r"Late-type, $\delta_g \gamma + \delta_g\delta_g$", 
                     #  r"Late-type. $\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$"]
 
-        self.axis=[-0.5,3.6,-2,2.9]
+        self.axis=[-1.,1.5,-1,1.9]
         self.fill_list=[True,False,False,True,False,False,False,False,True,True,True]*10
         self.line_list=[True,True,True,True]*10
         self.opaque_list=[True,False,False,False,False,False,False,False,True,True]*10
@@ -65,8 +65,8 @@ class plot2D(plots.MultinestPlots2D):
         #self.proxies=[]
 
     def run(self):
-        name1="intrinsic_alignment_parameters--c1"
-        name2="intrinsic_alignment_parameters--c2"
+        name1="intrinsic_alignment_parameters--a1"
+        name2="intrinsic_alignment_parameters--a2"
         if "fisher" not in self.source.name:
             filename = self.make_2d_plot(name1, name2)
         else:
@@ -117,7 +117,7 @@ class plot2D(plots.MultinestPlots2D):
 
         #import pdb ; pdb.set_trace()
 
-        y/=5.
+        #y/=5.
 
 
         #Interpolate using KDE
