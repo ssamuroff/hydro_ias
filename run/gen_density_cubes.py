@@ -5,8 +5,14 @@ import src.tidal_tensor_tng as tt
 snapshots = np.atleast_1d(sys.argv[1:]).astype(int)
 ptype='star'
 
-resolution=2**6
-print('resolution:%d'%resolution)
+
+#resolution=16
+resolution=32
+
+#resolution=64
+
+#resolution=128
+print('resolution: %d'%resolution)
 
 tt.gen_density_cubes(snaps=snapshots,ptype=ptype, resolution=resolution)
 
