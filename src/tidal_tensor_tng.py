@@ -274,17 +274,17 @@ def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512, box_si
 
             tid  = compute_tidal_tensor(dens/K -1 , smoothing=s, pixel_size=box_size/resolution)
             #import pdb ; pdb.set_trace()
-            out = fi.FITS(dens_dir+'%s_tidal%s_withtrace_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw')
+            out = fi.FITS(dens_dir+'%s_tidal%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw')
             out.write(tid)
             out.close()
 
             # Diagonalise the tidal matrix while we are at it
             vals, vects = npl.eigh(tid)
-            out = fi.FITS(dens_dir+'%s_tidal_vals%s_withtrace_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw') 
+            out = fi.FITS(dens_dir+'%s_tidal_vals%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw') 
             out.write(vals)
             out.close()
 
-            out = fi.FITS(dens_dir+'%s_tidal_vects%s_withtrace_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw') 
+            out = fi.FITS(dens_dir+'%s_tidal_vects%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw') 
             out.write(vects)
             out.close()
 
