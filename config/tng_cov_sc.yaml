@@ -1,19 +1,20 @@
 
-datafile: /home/ssamurof/mbii/datavecs/2pt_ia_mbii_compositecov.fits
+datafile: data/2pt/fits/2pt_tng.fits
 nbins : 12
 rlim : [0.1,68.]
 correlations : wgp wpp wgg
 cosmology : tng
 box_size : 207.
-ng : 0.02932091719004712
-sigma_e : 0.21
+ng : 0.0066 0.0063 0.0055 0.00450
+sigma_e : 0.148 0.154 0.161 0.168
 kmin : 0.06
-kmax : 5000
-bias: 1.
+kmax : 60
+bias: 2.384878 2.597587 2.839240 3.227029 
+aia : 0.4057986 0.8472827 0.4738859 0.4502558
 
-redshifts : 0.0
+redshifts : 0.0 0.3 0.625 1.
 
-savedir : tng/2pt/txt/
+savedir : tng_sc/2pt/txt/
 shapes : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 positions : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 njk : 4
@@ -26,4 +27,4 @@ fits:
   output : 2pt_tng.fits
   snapshots : 99 78 62 50
   correlations : wgp wpp wgg
-  covariance : tng/cov/covmat-analytic-iteration5.txt
+  covariance : tng/cov/covmat-analytic.txt

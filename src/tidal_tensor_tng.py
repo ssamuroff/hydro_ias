@@ -196,7 +196,8 @@ def build_density_cube(snap, resolution=512, npart=600, ptype='dm'):
     """
     base_name = base_dir+ 'snapdir_%03d/snapshot_%03d'%(snap,snap)
     # This is hard coded, and will remain so until and unless anyone else needs to use it
-    basePath = "/Volumes/muskrat/other_peoples_datasets/illustrisTNG/TNG300-1/output/"
+   # basePath = "/Volumes/muskrat/other_peoples_datasets/illustrisTNG/TNG300-1/output/"
+    basePath = "/home/rmandelb.proj/ssamurof/data/Illustris/TNG300-1/output/"
 
     # Read the size of the box in mpc
     boxsize = 205
@@ -219,7 +220,7 @@ def build_density_cube(snap, resolution=512, npart=600, ptype='dm'):
         else:
             Mp = f[gName]['Masses'][:]
 
-        #import pdb ; pdb.set_trace()
+     #   import pdb ; pdb.set_trace()
         hist,edges = np.histogramdd(ptcl_coords, resolution, range=[[0,boxsize],[0,boxsize],[0,boxsize]], weights=Mp)
         density = density + hist
         f.close()
@@ -302,9 +303,13 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
     nx = dens.shape[0]
     dfilter = False 
 
-    print('pixel scale = %3.3f'%pixel_size)
+    norm = nx * nx * nx
 
-    k  = npf.fftfreq(nx)[np.mgrid[0:nx,0:nx,0:nx]]
+    print('pixel scale = %3.3f'%pixel_size)
+    
+
+    #k  = npf.rfftfreq(nx, d=205./nx)[np.mgrid[0:nx,0:nx,0:nx]]
+    k  = npf.fftfreq(nx, d=205./nx)[np.mgrid[0:nx,0:nx,0:nx]]
     tidal_tensor = np.zeros((nx,nx,nx,3,3),dtype=np.float32)
     
     if dfilter:
@@ -313,13 +318,15 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
         G = gaussian_filter(dens,sigma,mode='wrap')
     else:
         print('not filtering')
-        G = dens
+        G = dens + 1
 
-    fft_dens = npf.fftn(G) # 3D (512 x 512 x 512) grid ; each cell is a k mode
+    fft_dens = npf.fftn(G) / norm # 3D (512 x 512 x 512) grid ; each cell is a k mode
+    #import pdb ; pdb.set_trace()
     for i in range(3):
         for j in range(3):
             
             # k[i], k[j] are 3D matrices, as is k
+            #fft_dens = np.sqrt(fft_dens.real**2)
 
             temp = fft_dens * k[i]*k[j]/(k[0]**2 + k[1]**2 + k[2]**2)
 
@@ -329,8 +336,8 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
 
             temp[0,0,0] = 0
 
-            tidal_tensor[:,:,:,i,j] = npf.ifftn(temp).real
-           # import pdb ; pdb.set_trace()
+            tidal_tensor[:,:,:,i,j] = npf.ifftn(temp).real * norm /nx
+            #import pdb ; pdb.set_trace()
 
 
 #    for i in range(nx):
@@ -341,7 +348,6 @@ def compute_tidal_tensor(dens, smoothing=0.25, pixel_size=0.1953):
 #                tidal_tensor[i,j,k,:,:] = tidal_tensor[i,j,k,:,:] - T
 
 
-    #import pdb ; pdb.set_trace()
 
     return tidal_tensor
 
@@ -359,9 +365,12 @@ def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512, box_si
     else:
         model_name = '_%smodel'%model
 
+
+
     for i in snaps:
         dens = fi.FITS(dens_dir+'density/%s_density%s_%03d_%d.fits'%(ptype,model_name,i,resolution))[-1].read()
         K = np.mean(dens)
+        #import pdb ; pdb.set_trace()
         #K = (box_size*1./resolution)**3
         #H0,b0=np.histogram(dens,bins=1000)
         #x0 = (b0[:-1]+b0[1:])/2
@@ -370,16 +379,19 @@ def gen_tidal_tensors(snaps=[], smoothing=[], ptype='dm', resolution=512, box_si
 
             tid  = compute_tidal_tensor(dens/K -1 , smoothing=s, pixel_size=box_size/resolution)
             #import pdb ; pdb.set_trace()
+            os.system('rm ' + dens_dir+'%s_tidal%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution))
             out = fi.FITS(dens_dir+'%s_tidal%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw')
             out.write(tid)
             out.close()
 
             # Diagonalise the tidal matrix while we are at it
             vals, vects = npl.eigh(tid)
+            os.system('rm ' + dens_dir+'%s_tidal_vals%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution))
             out = fi.FITS(dens_dir+'%s_tidal_vals%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw') 
             out.write(vals)
             out.close()
 
+            os.system('rm ' + dens_dir+'%s_tidal_vects%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution))
             out = fi.FITS(dens_dir+'%s_tidal_vects%s_%03d_%0.2f_%d.fits'%(ptype,model_name,i,s,resolution),'rw') 
             out.write(vects)
             out.close()

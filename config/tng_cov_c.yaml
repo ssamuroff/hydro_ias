@@ -4,28 +4,27 @@ nbins : 12
 rlim : [0.1,68.]
 correlations : wgp wpp wgg
 cosmology : tng
-box_size : 205.
-ng :  0.0133 0.0133 0.0130 0.0123
+box_size : 207.
+ng :  (0.02,0.0133) (0.02,0.0133) (0.019,0.0130) (0.017,0.0123)
 sigma_e : 0.148 0.154 0.161 0.168
 kmin : 0.06
 kmax : 60
-bias: 1.170773 1.333197 1.509657 1.790406
-aia : 1.780521 2.555506 2.573984 3.586254 
-
+bias: 1.144857 1.286370 1.365146 1.582094
+aia : 1.780521 2.555506 2.573984 3.586254
 
 redshifts : 0.0 0.3 0.625 1.
 
-savedir : tng_cc/2pt/txt/
+savedir : tng_c/2pt/txt/
 shapes : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 positions : data/cats/fits/TNG300-1_${SNAPSHOT}_non-reduced_galaxy_shapes.fits
 njk : 4
 
 snapshots : 99 78 62 50
 
-split_type : central central
+split_type : all central
 
 fits:
   output : 2pt_tng.fits
   snapshots : 99 78 62 50
   correlations : wgp wpp wgg
-  covariance : tng/cov/covmat-analytic.txt
+  covariance : tng_c/cov/tng-covmat-analytic.txt

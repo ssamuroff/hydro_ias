@@ -10,6 +10,7 @@ from scipy.interpolate import interp2d
 from scipy.integrate import quad as scipy_int1d
 import scipy.integrate as sint
 from src import hankel_transform as sukhdeep
+from src import wigner_transform as wigner
 from src import power_spectra as pkutil
 from astropy.cosmology import FlatLambdaCDM
 
@@ -25,12 +26,14 @@ class Cov:
 		self.nr = params['nbins']
 
 		self.area = params['box_size']**2
-
 		self.z = np.array(params['redshifts'].split()).astype(float)
-
 		self.cosmology = cosmologies[self.settings['cosmology']]
 
 		self.initialise_block(fits)
+
+		self.wigner_transforms = {}
+		for x in self.z:
+			self.wigner_transforms[x] = None
 
 		print('Setting up Hankel transform')
 		print("This initialisation step takes a little while, but the integration is quick once it's done.")
@@ -57,8 +60,18 @@ class Cov:
 		s = float(np.atleast_1d(self.settings['sigma_e'].split())[i])
 		return s
 
-	def get_ng(self,i):
-		s = float(np.atleast_1d(self.settings['ng'].split())[i])
+	def get_ng(self,i,m):
+		#import pdb ; pdb.set_trace()
+		#nlist = self.settings['ng'].split()
+		if m=='g':
+			j=0
+		else:
+			j=1
+
+		s = np.atleast_1d(self.settings['ng'].split())[i].replace('(','').replace(')','').split(',')[j]
+		s = float(s)
+
+		#s = float(np.atleast_1d(self.settings['ng'].split())[i])
 		return s
 
 
@@ -83,7 +96,7 @@ class Cov:
 	def choose_noise(self, m1, m2, z1, z2):
 
 		s = self.get_sigmae(z1)
-		ng = self.get_ng(z1)
+		ng = self.get_ng(z1,m1)
 
 		if (m1!=m2):
 			return 0
@@ -150,6 +163,63 @@ class Cov:
 
 #		return k, Pw
 
+	def evaluate_block_wigner(self, r1, r2, a, b, c, d, P1, P2, P3, P4, k, z0):
+		nu = kernels['%c%c'%(c,d)]
+		mu = kernels['%c%c'%(a,b)]
+		resampled_block = np.zeros((self.nr,self.nr))
+
+		if z==0:
+			chi = self.cosmology.comoving_transverse_distance(z=0.05).value
+		else:
+			chi = self.cosmology.comoving_transverse_distance(z=z0).value
+
+		ell = np.unique(np.int32(self.transform.k[0]*chi))
+		theta=self.transform.r[0]/chi
+		WT_kwargs={'l': ell,'theta': theta,'s1_s2':[(0,2),(2,0),(0,0)]} #(2,2),(2,-2)
+
+		if self.wigner_transforms[z0] is None:
+			WT = wigner_transform(**WT_kwargs)
+			self.wigner_transforms[z0] = WT
+
+		Ap = self.area
+		chi = self.cosmology.comoving_transverse_distance(z=z0).value
+		import pdb ; pdb.set_trace()
+
+		if (nu==mu) and (nu==2):
+			rW,cov_ggkkW = self.wigner_transforms[z0].projected_covariance(l_cl=k*chi,cl_cov=P1*P2/chi**2,s1_s2=(0,2))
+
+
+#
+#rW=rW*chi
+#r_reW,cov_ggkk_reW=HT.bin_cov(r=rW,cov=cov_ggkkW,r_bins=r_bins)
+## corr=HT.corr_matrix(cov=cov_ggkk_reW)
+#
+#
+#rW,cov_gkgkW=WT.projected_covariance(l_cl=kh*chi,cl_cov=p_gk_cov*p_gk_cov/chi**2,s1_s2=(0,2))
+#rW=rW*chi
+#r_reW,cov_gkgk_reW=HT.bin_cov(r=rW,cov=cov_gkgkW,r_bins=r_bins)
+## corr=HT.corr_matrix(cov=cov_gkgk_reW)
+#
+#
+#cov_finalW=(cov_ggkk_reW+cov_gkgk_reW)/area_comoving
+#corrW=HT.corr_matrix(cov=cov_finalW)
+#errorsW=HT.diagonal_err(cov=cov_finalW)
+
+
+
+
+		
+		
+		
+
+		
+		
+
+		return resampled_block/Ap
+
+
+
+
 
 	def evaluate_block(self, r1, r2, a, b, c, d, P1, P2, P3, P4, k):
 		nu = kernels['%c%c'%(c,d)]
@@ -172,8 +242,10 @@ class Cov:
 
 
 		Ap = self.area
+		import pdb ; pdb.set_trace()
+		
 
-		#import pdb ; pdb.set_trace()
+		
 		
 
 		return resampled_block/Ap
@@ -270,7 +342,10 @@ def run(params):
 					r1 = covmat.find_rp(c1,z1)
 					r2 = covmat.find_rp(c2,z2)
 
-					B = covmat.evaluate_block(r1, r2, a, b, c, d, P1, P2, P3, P4, k)
+					if covmat.settings['wigner']:
+						B = covmat.evaluate_block_wigner(r1, r2, a, b, c, d, P1, P2, P3, P4, k, z1) 
+					else:
+						B = covmat.evaluate_block(r1, r2, a, b, c, d, P1, P2, P3, P4, k)
 
 					i0,j0 = covmat.write(i0,j0,B)
 					print(c1,c2,i0,j0)
