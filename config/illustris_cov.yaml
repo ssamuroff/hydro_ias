@@ -1,13 +1,14 @@
-datafile: data/2pt/fits/2pt_illustris.fits
+datafile: data/2pt/fits/2pt_illustris_w_fidcov_iteration4.fits
 nbins : 8
 rlim : [0.1,24.]
 correlations : wgp wpp wgg
 cosmology : illustris
 box_size : 75.
-ng : 0.044 0.041 0.036 0.031
+ng : (0.044,0.044) (0.041,0.041) (0.036,0.036) (0.031,0.031)
 sigma_e : 0.108 0.113 0.126 0.138
 kmin : 0.06
 kmax : 60
+wigner: True
 
 bias: 0.8965686 0.9674289 1.242307 1.384373
   #0.7878450 0.8726174 1.209189 1.216032
@@ -44,7 +45,7 @@ snapshots : 135 114 98 85
 njk : 3
 
 fits:
-  output : 2pt_illustris.fits
+  output : illustris/2pt/fits/2pt_illustris.fits
   snapshots : 135 114 98 85
   correlations : wgp wpp wgg
-  covariance : illustris/cov/covmat-analytic-iteration2.txt
+  covariance : illustris/cov/illustris-covmat-analytic.txt

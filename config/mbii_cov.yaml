@@ -1,14 +1,16 @@
 
-datafile: data/2pt/fits/2pt_mbii_jkcov.fits
+datafile: data/2pt/fits/2pt_mbii_w_fidcov_iteration4.fits
 nbins : 12
 rlim : [0.1,33]
 correlations : wgp wpp wgg
 cosmology : mbii
 box_size : 100.
-ng : 0.033578 0.035 0.036 0.035  #0.11356
+ng : (0.033578,0.033578) (0.035,0.035) (0.036,0.036) (0.035,0.035)  #0.11356
 sigma_e : 0.148 0.153 0.162 0.168
 kmin : 0.06
 kmax : 60
+wigner: True
+
 bias: 1.214443 1.347514 1.482626 1.771977
 
 #1.010025 1.144710 1.270445 1.448184
@@ -34,7 +36,7 @@ snapshots : 85 79 73 68
 njk : 3
 
 fits:
-  output : 2pt_mbii.fits
+  output : mbii/2pt/fits/2pt_mbii.fits
   snapshots : 85 79 73 68
   correlations : wgp wpp wgg
-  covariance : mbii/cov/covmat-analytic-iteration3.txt
+  covariance : mbii/cov/mbii-covmat-analytic.txt

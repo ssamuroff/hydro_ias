@@ -6,11 +6,11 @@ correlations : wgp wpp wgg
 cosmology : tng
 box_size : 205.
 ng : (0.020,0.020) (0.02,0.02) (0.019,0.019) (0.017,0.017)
-sigma_e : 0.138 0.146 0.154 0.161ß
+sigma_e : 0.138 0.146 0.154 0.161
 kmin : 0.03
 kmax : 120
 bias: 1.144461 1.323140 1.399374 1.605517
-
+wigner: True
 
 # 1.574391 1.741136 1.892003 2.173904
   #1.575286 1.744015 1.890065 2.177026
@@ -40,4 +40,5 @@ fits:
   output : 2pt_tng.fits
   snapshots : 99 78 62 50
   correlations : wgp wpp wgg
-  covariance : tng/cov/covmat-analytic-iteration3.txt
+  covariance : tng/cov/tng-covmat-analytic.txt
+

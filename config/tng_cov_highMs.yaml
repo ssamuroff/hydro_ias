@@ -5,12 +5,13 @@ rlim : [0.1,68.]
 correlations : wgp wpp wgg
 cosmology : tng
 box_size : 205.
-ng : 0.0100 0.0098 0.0093 0.008
+ng : (0.02,0.0100) (0.02,0.0098) (0.019,0.0093) (0.017,0.008)
 sigma_e : 0.1402 0.147 0.155 0.163
 kmin : 0.06
 kmax : 60
 bias: 1.693325 1.906995 2.091194 2.405666
 aia : 2.362750 2.914613 2.92487 3.672815 
+wigner: True
 
 redshifts : 0.0 0.3 0.625 1.
 
@@ -21,7 +22,7 @@ njk : 4
 
 snapshots : 99 78 62 50
 
-split_type : stellar_mass_high stellar_mass_high
+split_type : all stellar_mass_high
 
 fits:
   output : 2pt_tng.fits
