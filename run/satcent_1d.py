@@ -372,6 +372,11 @@ plt.plot(samples, Lcc_99, color='darkred', lw=1.5, ls=':', label=r'$A_{\rm II}^{
 plt.plot(samples, Lss_99, color='midnightblue', lw=1.5, ls='--')
 plt.plot(samples, Lsc_99, color='darkmagenta', lw=1.5, ls='-')
 
+#import pdb ; pdb.set_trace()
+x0,L0 = np.loadtxt('plotting_scripts/datapoints/tng_like_sat.txt').T
+#L0[np.isinf(L0)]=0
+plt.fill_between(x0,L0,color='darkmagenta',alpha=0.2)
+#path = '/Users/hattifattener/coma/hydro_ias/chains/rundir/out_tng_ss_gp1_pp1_wgg1_nla2_z0_multinest_fidcov_iteration2_rmin6_rmax33.txt'
 
 
 plt.yticks(visible=False)
