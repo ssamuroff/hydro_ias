@@ -135,6 +135,8 @@ def split_catalogue(cat, options, i):
 	elif (s=='stellar_mass_low'):
 		Ms = np.median(cat['stellar_mass_all'])
 		mask = (cat['stellar_mass_all']<Ms)
+        elif (s=='all'):
+                mask = np.ones_like(cat['gal_id']).astype(bool)
 	else:
 		raise ValueError('Unrecognised split type:',s)
 
