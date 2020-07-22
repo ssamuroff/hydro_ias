@@ -4,7 +4,7 @@ import numpy as np
 import os
 import argparse
 import yaml
-from halotools.mock_observables.alignments import ii_plus_projected
+from halotools_ia.correlation_functions import ii_plus_projected
 
 period={'massiveblackii':100, 'illustris':75}
 
