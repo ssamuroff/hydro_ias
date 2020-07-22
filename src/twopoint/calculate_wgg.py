@@ -6,8 +6,11 @@ import argparse
 import yaml
 from halotools.mock_observables.two_point_clustering import tpcf 
 from halotools.mock_observables.two_point_clustering import wp 
+from halotools.mock_observables.two_point_clustering import marked_tpcf 
 
 periods={'massiveblackii':100, 'illustris':75}
+colour_split_params = {99 : (0.045, 1.84), 78: (0.045, 1.84), 62: (0.055, 1.95), 50: (0.022, 1.19)}
+
 
 
 def compute(options, binning, snapshot, ijk):
@@ -17,7 +20,33 @@ def compute(options, binning, snapshot, ijk):
 	print('Density data : %s'%posfile)
 
 	positions = fi.FITS(posfile)[-1].read()
-	split_type, positions = split_catalogue(positions,options,0)
+	split_type, positions = split_catalogue(positions,options,snapshot,0)
+
+	if ('use_weights' in options):
+		if options['use_weights']:
+
+			print('Applying weights from file:')
+			base = os.path.dirname(posfile.replace('/fits/','/txt/') )
+			sim, s, _, _, _ = os.path.basename(posfile).split('_')
+			weightsfile = base + '/%s_%s_weights.dat'%(sim,s)
+			print(weightsfile)
+
+			wts1 = np.loadtxt(weightsfile)
+			wts2 = np.loadtxt(weightsfile)
+			wts1/=np.sum(wts1)
+			wts1 *= len(wts1)
+			wts2/=np.sum(wts2)
+			wts2 *= len(wts2)
+			apply_weights = True
+		else:
+			apply_weights = False
+	else:
+		apply_weights = False
+
+	if (not apply_weights):
+		wts1 = np.ones_like(positions['x'])
+		wts2 = np.ones_like(positions['x'])
+		apply_weights=False
 
 	if (ijk>-1):
 		pmask = get_jk_mask(ijk, options['njk'], options['box_size'], positions)
@@ -40,7 +69,7 @@ def compute(options, binning, snapshot, ijk):
 		return None
 
 	#c0c0 = compute_gg_treecorr(positions[pmask], positions, options, binning, ijk)
-	c0c0 = compute_gg(positions[pmask], positions, options, binning, ijk)
+	c0c0 = compute_gg(positions[pmask], positions, options, binning, ijk, weights1=wts1[pmask], weights2=wts2)
 	export(filename, rpbins, c0c0)
 		
 	print('Done')
@@ -76,6 +105,15 @@ def randoms_halotools(cat1, period=100):
 	np.random.seed(9000)
 	rcat = np.array([np.random.rand(cat1.size*10)*period, np.random.rand(cat1.size*10)*period, np.random.rand(cat1.size*10)*period])
 	return rcat.T
+
+
+def randoms_treecorr(cat1, period=100, fac=3):
+	# Initialise randoms
+	# Fix the random seed so the randoms are always the same for a catalog of given length
+	# Should probably migrate this to a config option
+	np.random.seed(9000)
+	rcat = {'x':np.random.rand(cat1.size*fac)*period, 'y':np.random.rand(cat1.size*fac)*period, 'z':np.random.rand(cat1.size*fac)*period}
+	return rcat
 
 def finish_nn(corr, cat1, cat2, rcat1, rcat2, options, nbins):
 
@@ -175,8 +213,103 @@ def compute_gg_treecorr(cat1, cat2, options, nbins, ijk):
 	return gg
 
 
+def normalise_weights_column(column):
+	if column is None:
+		wt = np.ones_like(column['x'])
+	else:
+		wt = column
+		wt/=sum(wt)
+		wt*=len(column)
+	return wt
 
-def compute_gg(cat1, cat2, options, nbins, ijk):
+def wp_treecorr(positions1, positions2, randoms1, randoms2, weights1, weights2, rbins, pi_max):
+	# scale binning. Common to all of the 2pt measurements
+	npi = 25
+	nbins = len(rbins)-1
+	slop = 0.
+
+	rp = np.sqrt(rbins[:-1]*rbins[1:])
+
+
+	# for normal production mode
+	Pi = np.linspace(-pi_max,pi_max,npi+1)
+
+	#import pdb ; pdb.set_trace()
+
+	#normalise the weights
+	wt1 = normalise_weights_column(weights1)
+	wt2 = normalise_weights_column(weights2)
+	wtr1 = np.ones_like(randoms1['x'])
+	wtr2 = np.ones_like(randoms2['x'])
+
+	# arrays to store the output
+
+	DD   = np.zeros((npi, nbins))
+	DR   = np.zeros((npi, nbins))
+	RR   = np.zeros((npi, nbins))
+	RD   = np.zeros((npi, nbins))
+	r    = np.zeros((npi, nbins))
+
+
+	# Set up the catalogues
+	cat1  = treecorr.Catalog(w=wt1, g1=None, g2=None, x=positions1['x'], y=positions1['y'], z=positions1['z'])
+	cat2  = treecorr.Catalog(w=wt2, g1=None, g2=None, x=positions2['x'], y=positions2['y'], z=positions2['z'])
+	rcat1 = treecorr.Catalog(w=wtr1, g1=None, g2=None, x=randoms1['x'], y=randoms1['y'], z=randoms1['z'])
+	rcat2 = treecorr.Catalog(w=wtr2, g1=None, g2=None, x=randoms2['x'], y=randoms2['y'], z=randoms2['z'])
+
+
+	NR1 = randoms1['x'].size * 1.0
+	NR2 = randoms2['x'].size * 1.0
+	ND1 = positions1['x'].size * 1.0
+	ND2 = positions2['x'].size * 1.0
+
+	f0 = (NR1*NR2)/(ND1*ND2)
+	f1 = (NR1*NR2)/(ND1*NR2)
+	f2 = (NR1*NR2)/(ND2*NR1)
+
+	#import pdb ; pdb.set_trace()
+
+	pibins = zip(Pi[:-1],Pi[1:])
+
+	for p,(plow,phigh) in enumerate(pibins):
+		#import pdb ; pdb.set_trace()
+		nn = treecorr.NNCorrelation(nbins=nbins, min_sep=rbins[0], max_sep=rbins[-1], min_rpar=plow, max_rpar=phigh, bin_slop=slop, verbose=0)
+
+		nn.process(rcat1, rcat2, metric='Rperp')
+		RR[p,:] = np.copy(nn.weight)
+
+		nn.clear()
+
+		nn.process_cross(cat1, rcat2, metric='Rperp')
+		DR[p,:] =  np.copy(nn.weight) #interpolate_counts(np.copy(nn.weight), np.copy(nn.rnom), rp)
+		nn.clear()
+
+		nn.process_cross(rcat1, cat2, metric='Rperp')
+		RD[p,:] =  np.copy(nn.weight) #interpolate_counts(np.copy(nn.weight), np.copy(nn.rnom), rp)
+		nn.clear()
+
+		nn.process_cross(cat1, cat2, metric='Rperp')
+		DD[p,:] =  np.copy(nn.weight) #interpolate_counts(np.copy(nn.weight), np.copy(nn.rnom), rp)
+		nn.clear()
+
+		print(p,plow,phigh)
+		#import pdb ; pdb.set_trace()
+
+
+	xi_gg = (f0 * DD/RR) - (f1 * DR/RR) - (f2 * RD/RR) + 1.0
+	xi_gg[np.isinf(xi_gg)] = 0.
+	xi_gg[np.isnan(xi_gg)] = 0.
+
+	xPi = (Pi[1:]+Pi[:-1])/2
+
+	w_gg = np.trapz(xi_gg,xPi,axis=0)
+#	import pdb ; pdb.set_trace()
+
+	return w_gg
+
+
+
+def compute_gg(cat1, cat2, options, nbins, ijk, weights1=None, weights2=None):
 	pvec1 = np.vstack((cat1['x'], cat1['y'], cat1['z'])).T
 	pvec2 = np.vstack((cat2['x'], cat2['y'], cat2['z'])).T
 	rbins = np.logspace(np.log10(options['rlim'][0]), np.log10(options['rlim'][1]), nbins+1 )
@@ -190,7 +323,12 @@ def compute_gg(cat1, cat2, options, nbins, ijk):
 	else:
 		# wp returns w_11, w_12, w22 
 		_,gg,_ = wp(pvec2, rbins, pi_max, sample2=pvec1, period=options['box_size'], num_threads=1, estimator='Landy-Szalay') 
-	#period=periods[options['simulation']]
+
+
+#	randoms1 = randoms_treecorr(cat1, period=options['box_size'], fac=10)
+#	randoms2 = randoms_treecorr(cat2, period=options['box_size'], fac=10)
+#
+#	gg = wp_treecorr(cat1, cat2, randoms1, randoms2, weights1, weights2, rbins, pi_max) 
 	#import pdb ; pdb.set_trace()
 
 	return gg
@@ -224,7 +362,28 @@ def get_jk_mask(ijk, njk, box_size, catalogue):
 
 	return mask
 
-def split_catalogue(cat, options, i):
+def interpolate_counts(XX0, r0, rout):
+    # no interpolation needed...
+    if (np.isclose(rout,r0).all()):
+        return XX0
+
+    elif (XX0>0).all():
+    	XX = np.interp(np.log10(rout), np.log10(r0), np.log10(XX0))
+        #interp = spi.interp1d(np.log10(r0), np.log10(XX0), fill_value='extrapolate', kind='linear')
+    	loglog = True
+    else:
+    	XX = np.interp(np.log10(rout), np.log10(r0), XX0)
+        #interp = spi.interp1d(np.log10(r0), XX0, fill_value='extrapolate')
+    	loglog = False
+
+    #XX = interp(np.log10(rout))
+
+    if loglog:
+        XX = 10**XX
+
+    return XX
+
+def split_catalogue(cat, options, snapshot, i):
 
 	if (not ('split_type' in options.keys())):
 		return '', cat
@@ -243,11 +402,44 @@ def split_catalogue(cat, options, i):
 	elif (s=='stellar_mass_low'):
 		Ms = np.median(cat['stellar_mass_all'])
 		mask = (cat['stellar_mass_all']<Ms)
-        elif (s=='all'):
-                mask = np.ones_like(cat['gal_id']).astype(bool)
+	elif (s=='red'):
+		m0,c0 = colour_split_params[snapshot]
+		gi = cat['gmag']-cat['imag']
+		mask = (gi>=(m0*cat['rmag']+c0))
+	elif (s=='blue'):
+		m0,c0 = colour_split_params[snapshot]
+		gi = cat['gmag']-cat['imag']
+		mask = (gi<(m0*cat['rmag']+c0))
+
+
+	elif (s=='high_mass_red'):
+		m0,c0 = colour_split_params[snapshot]
+		gi = cat['gmag']-cat['imag']
+		Ms = np.median(cat['stellar_mass_all'])
+		mask = (gi>=(m0*cat['rmag']+c0)) & (cat['stellar_mass_all']>=Ms)
+	elif (s=='high_mass_blue'):
+		m0,c0 = colour_split_params[snapshot]
+		gi = cat['gmag']-cat['imag']
+		Ms = np.median(cat['stellar_mass_all'])
+		mask = (gi<(m0*cat['rmag']+c0)) & (cat['stellar_mass_all']>=Ms)
+
+	elif (s=='low_mass_red'):
+		m0,c0 = colour_split_params[snapshot]
+		gi = cat['gmag']-cat['imag']
+		Ms = np.median(cat['stellar_mass_all'])
+		mask = (gi>=(m0*cat['rmag']+c0)) & (cat['stellar_mass_all']<Ms)
+	elif (s=='low_mass_blue'):
+		m0,c0 = colour_split_params[snapshot]
+		gi = cat['gmag']-cat['imag']
+		Ms = np.median(cat['stellar_mass_all'])
+		mask = (gi<(m0*cat['rmag']+c0)) & (cat['stellar_mass_all']<Ms)
+
+	elif (s=='all'):
+		mask = np.ones_like(cat['x']).astype(bool)
+
 	else:
 		raise ValueError('Unrecognised split type:',s)
 
-	print('Split leaves %d objects'%(cat['x'][mask].size))
+	print('Split (%s) leaves %d objects'%(s, cat['x'][mask].size))
 
 	return '_%s'%options['split_type'].split()[i], cat[mask]

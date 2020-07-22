@@ -35,6 +35,7 @@ class Cov:
 		for x in self.z:
 			self.wigner_transforms[x] = None
 
+
 		print('Setting up Hankel transform')
 		print("This initialisation step takes a little while, but the integration is quick once it's done.")
 		self.transform = sukhdeep.hankel_transform(rmin=self.settings['rlim'][0]*0.95, rmax=self.settings['rlim'][1]+10, kmin=self.settings['kmin'], kmax=self.settings['kmax'], j_nu=[0,2,4], n_zeros=9100)
@@ -167,8 +168,9 @@ class Cov:
 		nu = kernels['%c%c'%(c,d)]
 		mu = kernels['%c%c'%(a,b)]
 		resampled_block = np.zeros((self.nr,self.nr))
+		#import pdb ; pdb.set_trace()
 
-		if z==0:
+		if z0==0:
 			chi = self.cosmology.comoving_transverse_distance(z=0.05).value
 		else:
 			chi = self.cosmology.comoving_transverse_distance(z=z0).value
@@ -178,44 +180,55 @@ class Cov:
 		WT_kwargs={'l': ell,'theta': theta,'s1_s2':[(0,2),(2,0),(0,0)]} #(2,2),(2,-2)
 
 		if self.wigner_transforms[z0] is None:
-			WT = wigner_transform(**WT_kwargs)
-			self.wigner_transforms[z0] = WT
+			print('Wigner-ing...')
+			try:
+				WT = wigner.wigner_transform(**WT_kwargs) 
+				self.wigner_transforms[z0] = WT
+			except:
+				import pdb ; pdb.set_trace()
 
 		Ap = self.area
-		chi = self.cosmology.comoving_transverse_distance(z=z0).value
-		import pdb ; pdb.set_trace()
 
-		if (nu==mu) and (nu==2):
+		C = np.zeros((self.nr,self.nr))
+		
+		#import pdb ; pdb.set_trace()
+
+#		if (nu==mu) and isinstance(nu,int):
+#			rW,COV = self.wigner_transforms[z0].projected_covariance(l_cl=k*chi,cl_cov=P1*P2/chi**2,s1_s2=(nu,mu))
+#			r_edges, C = self.transform.bin_cov(r=rW*chi, cov=COV, bin_center=r1)
+#			C*=2
+#
+		if '%c%c%c%c'%(a,b,c,d)=='gpgp':
 			rW,cov_ggkkW = self.wigner_transforms[z0].projected_covariance(l_cl=k*chi,cl_cov=P1*P2/chi**2,s1_s2=(0,2))
+			r_edges, C1 = self.transform.bin_cov(r=rW*chi, cov=cov_ggkkW, bin_center=r1)
+
+			rW,cov_gkgkW = self.wigner_transforms[z0].projected_covariance(l_cl=k*chi,cl_cov=P3*P4/chi**2,s1_s2=(0,2))
+			r_redges2,C2 = self.transform.bin_cov(r=rW*chi,cov=cov_gkgkW,bin_center=r1)
+
+			C+=(C1+C2)
+
+		if '%c%c%c%c'%(a,b,c,d)=='gggg':
+			rW,cov_ggggW = self.wigner_transforms[z0].projected_covariance(l_cl=k*chi,cl_cov=P1*P2/chi**2,s1_s2=(0,0))
+			r_edges, C1 = self.transform.bin_cov(r=rW*chi, cov=cov_ggggW, bin_center=r1)
+			C+=C1*2
+
+		if ('%c%c%c%c'%(a,b,c,d)=='gpgg') or ('%c%c%c%c'%(a,b,c,d)=='gggp'):
+			rW,cov_gggkW = self.wigner_transforms[z0].projected_covariance(l_cl=k*chi,cl_cov=P1*P2/chi**2,s1_s2=(0,2),s1_s2_cross=(0,0))
+			r_reW,C1 = self.transform.bin_cov(r=rW*chi,cov=cov_gggkW,bin_center=r1)
+			C+=C1*2
+
+		else: # revert to Hankel transform...
+		    if (nu==mu):
+		    	for index in np.atleast_1d(nu):
+		    		r_cov,block = self.transform.projected_covariance(k_pk=k, pk1=P1, pk2=P2, j_nu=index, taper=True)
+		    		r_cov2,block2 = self.transform.projected_covariance(k_pk=k, pk1=P3, pk2=P4, j_nu=index, taper=True)
+		    		r_edges1, C1 = self.transform.bin_cov(r=r_cov, cov=block, bin_center=r1)
+		    		r_edges2, C2 = self.transform.bin_cov(r=r_cov2, cov=block2, bin_center=r2)
+
+		    		C += (C1+C2)
 
 
-#
-#rW=rW*chi
-#r_reW,cov_ggkk_reW=HT.bin_cov(r=rW,cov=cov_ggkkW,r_bins=r_bins)
-## corr=HT.corr_matrix(cov=cov_ggkk_reW)
-#
-#
-#rW,cov_gkgkW=WT.projected_covariance(l_cl=kh*chi,cl_cov=p_gk_cov*p_gk_cov/chi**2,s1_s2=(0,2))
-#rW=rW*chi
-#r_reW,cov_gkgk_reW=HT.bin_cov(r=rW,cov=cov_gkgkW,r_bins=r_bins)
-## corr=HT.corr_matrix(cov=cov_gkgk_reW)
-#
-#
-#cov_finalW=(cov_ggkk_reW+cov_gkgk_reW)/area_comoving
-#corrW=HT.corr_matrix(cov=cov_finalW)
-#errorsW=HT.diagonal_err(cov=cov_finalW)
-
-
-
-
-		
-		
-		
-
-		
-		
-
-		return resampled_block/Ap
+		return C/Ap
 
 
 
@@ -343,7 +356,7 @@ def run(params):
 					r2 = covmat.find_rp(c2,z2)
 
 					if covmat.settings['wigner']:
-						B = covmat.evaluate_block_wigner(r1, r2, a, b, c, d, P1, P2, P3, P4, k, z1) 
+						B = covmat.evaluate_block_wigner(r1, r2, a, b, c, d, P1, P2, P3, P4, k, covmat.z[z1]) 
 					else:
 						B = covmat.evaluate_block(r1, r2, a, b, c, d, P1, P2, P3, P4, k)
 

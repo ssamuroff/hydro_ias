@@ -29,10 +29,12 @@ snapshot=99
 
 dat = np.genfromtxt('/home/rmandelb.proj/ssamurof/Illustris_Shapes/data/value_added_catalogs/TNG300-1_%d_vagc.dat'%snapshot, names=True)
 
+
 mask=(dat['gal_id']==dat['central_id'])
 
 Rc=dat['offset'][mask]
 Rs=dat['offset'][np.invert(mask)]
+
 
 
 Hc,binc=np.histogram(Rc,bins=np.logspace(-2, np.log10(5000), 300),normed=1)
@@ -46,15 +48,18 @@ plt.plot(x,Hs*8,color='plum',lw=1.5, label='Satellites')
 plt.fill_between(x,Hs*8,color='plum',alpha=0.2)
 
 
+
 plt.xlabel('Offset from halo centre / $h^{-1}$ kpc', fontsize=fontsize)
 plt.ylabel('$p(R)$', fontsize=fontsize)
 plt.xticks(visible=True,fontsize=fontsize)
 plt.yticks(visible=True,fontsize=fontsize)
 plt.legend()
 plt.ylim(ymin=0)
+
 plt.xlim(3e-1,3000)
 plt.xscale('log')
 
 plt.subplots_adjust(bottom=0.155,left=0.155, hspace=0, wspace=0,top=0.95)
 plt.savefig('TNG300-1_%d_offsets.pdf'%snapshot)
+
 
