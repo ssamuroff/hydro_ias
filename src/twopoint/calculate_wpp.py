@@ -247,6 +247,7 @@ def split_catalogue(cat, options, snapshot, i):
 	elif (s=='all'):
 		mask = np.ones_like(cat['x']).astype(bool)
 
+
 	else:
 		raise ValueError('Unrecognised split type:',s)
 
