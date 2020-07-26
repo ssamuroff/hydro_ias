@@ -29,7 +29,7 @@ class plot2D(plots.MultinestPlots2D):
     proxies=[]
     def __init__(self, *args, **kwargs):
         super(plot2D, self).__init__(*args, **kwargs)
-        self.colors=['darkmagenta','midnightblue','forestgreen', 'k','pink','steelblue',"purple", 'k', 'k', 'k', 'k']*10
+        self.colors=['darkmagenta','midnightblue','seagreen', 'k','pink','steelblue',"purple", 'k', 'k', 'k', 'k']*10
         self.linestyles=['-','--',':',':']*10
         pylab.style.use('y1a1')
         matplotlib.rcParams['xtick.major.size'] = 3.5
@@ -51,7 +51,7 @@ class plot2D(plots.MultinestPlots2D):
                     #  r"Late-type, $\delta_g \gamma + \delta_g\delta_g$", 
                     #  r"Late-type. $\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$"]
 
-        self.axis=[0.5,2.8,-0.75,5.6]
+        self.axis=[0.3,1.65,-0.05,2.9]
         self.fill_list=[True,True,True,False,False,False,False,False,True,True,True]*10
         self.line_list=[True,True,True,True]*10
         self.opaque_list=[True,False,False,False,False,False,False,False,True,True]*10
@@ -61,7 +61,7 @@ class plot2D(plots.MultinestPlots2D):
         self.linecolors=[None]*10
         self.opaque_centre=[False]*10
         self.fill_colors=[None,None]*10
-        self.plot_points=[(0.05,1.5)]
+        self.plot_points=[]
         #self.proxies=[]
 
     def run(self):
@@ -230,10 +230,10 @@ class plot2D(plots.MultinestPlots2D):
         #Do the labels
         print self.proxies,self.labels
         if self.labels is not None:
-            leg=pylab.legend(self.proxies,self.labels,loc="upper right", fontsize=20)
+            leg=pylab.legend(self.proxies,self.labels,loc="lower left", fontsize=20)
             leg.get_frame().set_alpha(0.75) # this will make the box totally transparent
             leg.get_frame().set_edgecolor('white') # this will make the edges of the 
-        pylab.ylabel(r"$A_\mathrm{IA}$",fontsize=22, fontname='serif')
+        pylab.ylabel(r"$A_1$",fontsize=22, fontname='serif')
         pylab.xlabel(r"$b_g$", fontsize=22, fontname='serif')
         pylab.tight_layout()
         for col,text in zip(self.colors,leg.get_texts()):
@@ -246,15 +246,18 @@ class plot2D(plots.MultinestPlots2D):
         pylab.yticks(visible=True, fontsize=18)
         pylab.xlim(self.axis[0], self.axis[1])
         pylab.ylim(self.axis[2], self.axis[3])
-        pylab.title('$z=0.0$', fontsize=25)
+        pylab.title('NLA', fontsize=25)
  #       pylab.subplots_adjust(top=0.95)
         x0 = [4.6]
         dx = [0.5]
         y0 = [1.77]
-        pylab.errorbar(x0,y0,xerr=dx,yerr=[0.04], markersize=9.0, markerfacecolor='k',color='k', marker='*',markeredgecolor='k', linestyle='none')
+        #pylab.errorbar(x0,y0,xerr=dx,yerr=[0.04], markersize=9.0, markerfacecolor='k',color='k', marker='*',markeredgecolor='k', linestyle='none')
       #  pylab.errorbar([4.35341365],[1.80416667], xerr=7.080459e-01, yerr=1.706998e-02,color='pink',marker='o')
         #pylab.title('$\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$')
-        #pylab.axhline(0,color="k",alpha=0.5,ls=':')
+        #import pdb ; pdb.set_trace()
+        A0 = y_axis[np.argwhere(like==like.max())[0,0]]
+        print('A1 = %3.2f'%A0)
+        pylab.axhline(A0,color=color,alpha=1.5,ls='--')
         #pylab.axhline(5.0,color="darkviolet",lw=1, ls="--")
         #print "Plotting bounds line..."
         return filename     

@@ -205,3 +205,37 @@ plt.annotate(labels[1], xy=(104,4), fontsize=fontsize)
 
 plt.savefig('corrmat.pdf')
 plt.savefig('corrmat.png')
+plt.close()
+
+X = np.hstack((corr1[0:12,0:12],corr1[0:12,48:60],corr1[0:12,96:108]))
+Y = np.hstack((corr1[48:60,0:12],corr1[48:60,48:60],corr1[48:60,96:108]))
+Z = np.hstack((corr1[96:108, 0:12],corr1[96:108, 48:60],corr1[96:108, 96:108]))
+CORR1 = np.vstack((X,Y,Z))
+X = np.hstack((corr2[0:12,0:12],corr2[0:12,48:60],corr2[0:12,96:108]))
+Y = np.hstack((corr2[48:60,0:12],corr2[48:60,48:60],corr2[48:60,96:108]))
+Z = np.hstack((corr2[96:108, 0:12],corr2[96:108, 48:60],corr2[96:108, 96:108]))
+CORR2 = np.vstack((X,Y,Z))
+
+S = np.zeros_like(CORR1)
+S+=CORR1
+
+i = np.arange(0,len(CORR1[0]),1)
+xx,yy = np.meshgrid(i,i)
+mask = xx>yy
+
+S[mask] = CORR2[mask]
+
+plt.imshow(S,cmap='seismic',interpolation='none', origin='lower')
+plt.clim(-1,1)
+plt.colorbar()
+
+plt.annotate(labels[0], xy=(0.5,33), fontsize=fontsize)
+plt.annotate(labels[1], xy=(26,0.5), fontsize=fontsize)
+
+plt.xticks([6,12,18,24,30])
+plt.yticks([0, 6,12,18,24,30])
+
+plt.savefig('corrmat_z0.pdf')
+plt.savefig('corrmat_z0.png')
+
+

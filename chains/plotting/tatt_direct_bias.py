@@ -40,11 +40,11 @@ class plot2D(plots.MultinestPlots2D):
         matplotlib.rcParams['ytick.direction']='in'
         #matplotlib.rcParams['text.usetex']=False
         matplotlib.rcParams['font.family']='serif'
-        self.labels= [ r'1pt Likelihood, $R=12.8 h^{-1} \mathrm{Mpc}$ (205/16 pix)',
+        self.labels= [ #r'1pt Likelihood, $R=12.8 h^{-1} \mathrm{Mpc}$ (205/16 pix)',
                        r'1pt Likelihood, $R=6.4 h^{-1} \mathrm{Mpc}$ (205/32 pix)',
                        r'1pt Likelihood, $R=3.2 h^{-1} \mathrm{Mpc}$ (205/64 pix)',
                        r'1pt Likelihood, $R=1.6 h^{-1} \mathrm{Mpc}$ (205/128 pix)',
-                       r'2pt Likelihood',
+                       r'2pt Likelihood $(r_{\rm p} > 6 h^{-1} \mathrm{Mpc})$',
                        r'$z=1.0$',
                        r'Mixed Sample'] #[r"Early-type, $\gamma \gamma$",
                      # r"Early-type, $\delta_g \gamma + \delta_g\delta_g$",
@@ -53,7 +53,7 @@ class plot2D(plots.MultinestPlots2D):
                     #  r"Late-type, $\delta_g \gamma + \delta_g\delta_g$", 
                     #  r"Late-type. $\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$"]
 
-        self.axis=[0,3.,-0.2,3.6]
+        self.axis=[0,2.1,-0.2,2.9]
         self.fill_list=[True,True,True,True,False,False,False,False,True,True,True]*10
         self.line_list=[True,True,True,True]*10
         self.opaque_list=[True,False,False,False,False,False,False,False,True,True]*10
