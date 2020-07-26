@@ -215,58 +215,38 @@ plt.annotate(labels[1], xy=(104,4), fontsize=fontsize)
 plt.savefig('corrmat.pdf')
 plt.savefig('corrmat.png')
 
+plt.close()
 
+X = np.hstack((corr1[0:12,0:12],corr1[0:12,48:60],corr1[0:12,96:108]))
+Y = np.hstack((corr1[48:60,0:12],corr1[48:60,48:60],corr1[48:60,96:108]))
+Z = np.hstack((corr1[96:108, 0:12],corr1[96:108, 48:60],corr1[96:108, 96:108]))
+CORR1 = np.vstack((X,Y,Z))
+X = np.hstack((corr2[0:12,0:12],corr2[0:12,48:60],corr2[0:12,96:108]))
+Y = np.hstack((corr2[48:60,0:12],corr2[48:60,48:60],corr2[48:60,96:108]))
+Z = np.hstack((corr2[96:108, 0:12],corr2[96:108, 48:60],corr2[96:108, 96:108]))
+CORR2 = np.vstack((X,Y,Z))
 
-plt.switch_backend('agg')
-a1,b1 = np.meshgrid(dy1,dy1)
-a2,b2 = np.meshgrid(dy2,dy2)
+S = np.zeros_like(CORR1)
+S+=CORR1
 
-corr1 = C1/a1/b1
-X1 = np.hstack((corr1[:12,:12], corr1[:12,48:60], corr1[:12,96:108]))
-X2 = np.hstack((corr1[48:60,:12], corr1[48:60,48:60], corr1[48:60,96:108]))
-X3 = np.hstack((corr1[96:108,:12], corr1[96:108,48:60], corr1[96:108,96:108]))
-corr1 = np.vstack((X1,X2,X3))
-
-corr2 = C2/a2/b2
-X1 = np.hstack((corr2[:12,:12], corr2[:12,48:60], corr2[:12,96:108]))
-X2 = np.hstack((corr2[48:60,:12], corr2[48:60,48:60], corr2[48:60,96:108]))
-X3 = np.hstack((corr2[96:108,:12], corr2[96:108,48:60], corr2[96:108,96:108]))
-corr2 = np.vstack((X1,X2,X3))
-
-S = np.zeros_like(corr1)
-S+=corr1
-
-print(corr1.shape)
-i = np.arange(0,len(corr1[0]),1)
+i = np.arange(0,len(CORR1[0]),1)
 xx,yy = np.meshgrid(i,i)
 mask = xx>yy
 
-plt.close()
-plt.subplot(111,aspect='equal')
-S[mask] = corr2[mask]
+S[mask] = CORR2[mask]
 
-plt.pcolor(S,cmap='seismic')
+plt.imshow(S,cmap='seismic',interpolation='none', origin='lower')
 plt.clim(-1,1)
 plt.colorbar()
 
-plt.yticks([0,10,20,30], fontsize=fontsize)
-plt.xticks([0,10,20,30], fontsize=fontsize)
+plt.annotate(labels[0], xy=(0.5,33), fontsize=fontsize)
+plt.annotate(labels[1], xy=(26,0.5), fontsize=fontsize)
 
-plt.annotate(labels[0], xy=(2,33.5), fontsize=fontsize)
-plt.annotate(labels[1], xy=(26,1), fontsize=fontsize)
-#plt.annotate(r'', fontsize=fontsize, xy=(6,-1))
-
-bbox_props = dict(fc="none", ec="none", lw=2)
-plt.annotate(r'$w_{g+}$', xy=(37, 99), fontsize=fontsize+2, xycoords='figure pixels', horizontalalignment='left', verticalalignment='top', bbox=bbox_props)
-plt.annotate(r'$w_{++}$', xy=(37, 178), fontsize=fontsize+2, xycoords='figure pixels', horizontalalignment='left', verticalalignment='top', bbox=bbox_props)
-plt.annotate(r'$w_{gg}$', xy=(37, 270), fontsize=fontsize+2, xycoords='figure pixels', horizontalalignment='left', verticalalignment='top', bbox=bbox_props)
+plt.xticks([6,12,18,24,30])
+plt.yticks([0, 6,12,18,24,30])
 
 
-plt.subplots_adjust(bottom=0.14,left=0.14)
 plt.savefig('corrmat_z0.pdf')
 plt.savefig('corrmat_z0.png')
-
-
-
 
 

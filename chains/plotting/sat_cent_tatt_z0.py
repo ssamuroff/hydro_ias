@@ -51,7 +51,7 @@ class plot2D(plots.MultinestPlots2D):
                     #  r"Late-type, $\delta_g \gamma + \delta_g\delta_g$", 
                     #  r"Late-type. $\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$"]
 
-        self.axis=[-1.,6,-6,6]
+        self.axis=[-0.5,3,-3,3]
         self.fill_list=[True,True,True,True,False,False,False,False,True,True,True]*10
         self.line_list=[True,True,True,True]*10
         self.opaque_list=[True,False,False,False,False,False,False,False,True,True]*10

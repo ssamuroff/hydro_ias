@@ -30,7 +30,7 @@ class plot2D(plots.MultinestPlots2D):
     def __init__(self, *args, **kwargs):
         super(plot2D, self).__init__(*args, **kwargs)
         self.colors=['darkmagenta', 'k', 'royalblue','forestgreen', 'pink', 'grey', 'midnightblue','plum']*10
-        self.linestyles=['-','--','-',':']*10
+        self.linestyles=['-','-','-','-','--','--','--','--']*10
         pylab.style.use('y1a1')
         matplotlib.rcParams['xtick.major.size'] = 3.5
         matplotlib.rcParams['xtick.minor.size'] = 1.7
@@ -55,8 +55,8 @@ class plot2D(plots.MultinestPlots2D):
                     #  r"Late-type, $\delta_g \gamma + \delta_g\delta_g$", 
                     #  r"Late-type. $\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$"]
 
-        self.axis=[0.5,3.8,-0.75,4.2]
-        self.fill_list=[True,False,False,True,True,False,False,True,True,True,True]*10
+        self.axis=[0.5,2.751,-0.75,5.]
+        self.fill_list=[True,True,True,True,False,False,False,False,True,True,True]*10
         self.line_list=[True,True,True,True]*10
         self.opaque_list=[True,False,False,False,False,False,False,False,True,True]*10
         self.linewidths=[2.]*len(self.colors)
@@ -256,13 +256,13 @@ class plot2D(plots.MultinestPlots2D):
             leg=pylab.legend(self.proxies,self.labels,loc="lower right", fontsize=16)
             leg.get_frame().set_alpha(0.75) # this will make the box totally transparent
             leg.get_frame().set_edgecolor('white') # this will make the edges of the 
-        pylab.ylabel(r"$A_\mathrm{IA}$",fontsize=22, fontname='serif')
+        pylab.ylabel(r"$A_1$",fontsize=22, fontname='serif')
         pylab.xlabel(r"$b_g$", fontsize=22, fontname='serif')
         pylab.tight_layout()
         for col,text in zip(self.colors,leg.get_texts()):
             text.set_color(col)
             if col=='pink':
-                text.set_color('hotpink')
+                text.set_color('pink')
         if blind:
             pylab.xticks(visible=False)
         pylab.xticks(visible=True, fontsize=18)

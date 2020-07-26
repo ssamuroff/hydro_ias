@@ -15,6 +15,6 @@ export RESOLUTION=128
 export SAMPLER=multinest
 export PARAMFILE=../ini/params_field.ini
 export VALUESFILE=../ini/values_field.ini
-export SAVEFILE=tatt_field_R${RESOLUTION}
+export SAVEFILE=tatt_c1c2bta_field_R${RESOLUTION}
 
 mpiexec -n 16 cosmosis $PARAMFILE --mpi -p runtime.sampler=$SAMPLER output.lock=F tatt_field.resolution=$RESOLUTION

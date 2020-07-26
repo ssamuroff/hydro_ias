@@ -40,11 +40,11 @@ class plot2D(plots.MultinestPlots2D):
         matplotlib.rcParams['ytick.direction']='in'
         #matplotlib.rcParams['text.usetex']=False
         matplotlib.rcParams['font.family']='serif'
-        self.labels= [ r'1pt Likelihood, $R=12.8 h^{-1} \mathrm{Mpc}$ (205/16 pix)',
-                       r'1pt Likelihood, $R=6.4 h^{-1} \mathrm{Mpc}$ (205/32 pix)',
-                       r'1pt Likelihood, $R=3.2 h^{-1} \mathrm{Mpc}$ (205/64 pix)',
-                       r'1pt Likelihood, $R=1.6 h^{-1} \mathrm{Mpc}$ (205/128 pix)',
-                       r'2pt Likelihood',
+        self.labels= [ r'1pt Likelihood, $R=12.8 h^{-1} \mathrm{Mpc}$ (205/16)',
+                       r'1pt Likelihood, $R=6.4 h^{-1} \mathrm{Mpc}$ (205/32)',
+                       r'1pt Likelihood, $R=3.2 h^{-1} \mathrm{Mpc}$ (205/64)',
+                       r'1pt Likelihood, $R=1.6 h^{-1} \mathrm{Mpc}$ (205/128)',
+                       r'2pt Likelihood (min. scale $r_{\rm p} = 6 h^{-1}$ Mpc)',
                        r'$z=1.0$',
                        r'Mixed Sample'] #[r"Early-type, $\gamma \gamma$",
                      # r"Early-type, $\delta_g \gamma + \delta_g\delta_g$",
@@ -53,7 +53,7 @@ class plot2D(plots.MultinestPlots2D):
                     #  r"Late-type, $\delta_g \gamma + \delta_g\delta_g$", 
                     #  r"Late-type. $\gamma \gamma + \delta_g \gamma + \delta_g\delta_g$"]
 
-        self.axis=[-1.e-4,2.8e-3,-1.2e-4,0.2e-4]
+        self.axis=[-0.4,3.5,-25,22]
         self.fill_list=[True,True,True,True,False,False,False,False,True,True,True]*10
         self.line_list=[True,True,True,True]*10
         self.opaque_list=[True,False,False,False,False,False,False,False,True,True]*10
@@ -234,7 +234,7 @@ class plot2D(plots.MultinestPlots2D):
         #Do the labels
         print self.proxies,self.labels
         if self.labels is not None:
-            leg=pylab.legend(self.proxies,self.labels,loc="lower left", fontsize=15)
+            leg=pylab.legend(self.proxies,self.labels,loc="upper left", fontsize=15)
             leg.get_frame().set_alpha(0.75) # this will make the box totally transparent
             leg.get_frame().set_edgecolor('white') # this will make the edges of the 
         pylab.ylabel(r"$A_2$",fontsize=22, fontname='serif')
