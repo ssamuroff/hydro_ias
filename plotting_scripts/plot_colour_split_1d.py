@@ -80,7 +80,7 @@ plt.errorbar(x-0.01,c2,yerr=dc2.T,color='midnightblue',linestyle='none', label='
 plt.errorbar([0.09],[1.],yerr=[0.8],ecolor='steelblue', markeredgecolor='steelblue',markerfacecolor='steelblue', linestyle='none', marker='o', markersize=3.5, alpha=0.4) #sdss main blue J18 
 plt.errorbar([0.335],[0.75],yerr=[0.74],ecolor='steelblue', markeredgecolor='steelblue',markerfacecolor='steelblue', linestyle='none', marker='^', markersize=3.5, alpha=0.4) # gama z2b J18
 plt.errorbar([0.28],[2],yerr=[1.],ecolor='steelblue', markeredgecolor='steelblue',markerfacecolor='steelblue', linestyle='none', marker='>', markersize=3.5, alpha=0.4) # SDSS C5 S15
-#plt.errorbar([0.51],[0.24],yerr=[1.27],ecolor='steelblue', markeredgecolor='steelblue',markerfacecolor='steelblue', linestyle='none', marker='<', markersize=3.5, alpha=0.4) #wigglez
+plt.errorbar([0.51],[0.24],yerr=[1.27],ecolor='steelblue', markeredgecolor='steelblue',markerfacecolor='steelblue', linestyle='none', marker='<', markersize=3.5, alpha=0.4) #wigglez
 
 plt.legend(fontsize=12, loc='upper left')
 
